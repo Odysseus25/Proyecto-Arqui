@@ -89,7 +89,13 @@ public class Nucleo {
         return true;
     };
     public int RequestInst(){
-        return ci.getInstruccion(pc);
+        int block = pc;
+        int word = 0;
+        while(block%8!=0){
+            block-=1;
+            word++;
+        }
+        return ci.getInstruccion(block, word);
     };
     
     public void Write(int dir, int[] bloque){};

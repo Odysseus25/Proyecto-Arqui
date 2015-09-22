@@ -12,10 +12,23 @@ package clases;
 public class CacheInstrucciones {
     int cache[][] = new int[5][8];
     public CacheInstrucciones(Bus b){bus = b;};
-    public int getInstruccion(int dir){
-        return 0;
+    public int getInstruccion(int dir, int word){
+        if(verificarBloque(dir)) {
+            return findWord(dir, word);
+        } else {
+            traeBloque();
+            return findWord(dir, word);
+        }
     };
-    public boolean verificarBloque(int dir){return false;};
-    public int findWord(int block, int word){return 0;};
+    public boolean verificarBloque(int dir){
+        if(cache[4][dir%(8*4)]==dir) {
+            return true;
+        } else {
+            return false;
+        }
+        
+    };
+    public int findWord(int block, int word){return cache[word][block%8];};
+    public void traeBloque(){};
     Bus bus; 
 }
