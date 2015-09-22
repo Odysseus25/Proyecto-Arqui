@@ -10,16 +10,12 @@ package clases;
  * @author dave
  */
 public class CacheInstrucciones {
-    static class Hilo {
-        int hid;
-        int hpc;
-        int estado;
-        int registros[] = new int[32];
-    }
     int cache[][] = new int[5][8];
     public CacheInstrucciones(Bus b){bus = b;};
-    public void getInstruccion(){};
-    public void verificarBloque(){};
-    public int findWord(){return 0;};
+    public int getInstruccion(int dir){
+        return 0;
+    };
+    public boolean verificarBloque(int dir){return false;};
+    public int findWord(int block, int word){return 0;};
     Bus bus; 
 }

@@ -16,6 +16,12 @@ public class ProyectoArqui {
      */
     public static void main(String[] args) {
         // TODO code application logic here
+        int num = 32783;
+        int m1 =  61440;
+        int res1 = (num&m1);
+        int res2 = res1>>(4*3);
+        System.out.println(res1+", "+res2);
+    
     }
     
 }
