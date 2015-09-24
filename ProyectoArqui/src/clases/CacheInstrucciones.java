@@ -11,24 +11,36 @@ package clases;
  */
 public class CacheInstrucciones {
     int cache[][] = new int[5][8];
-    public CacheInstrucciones(Bus b){bus = b;};
-    public int getInstruccion(int dir, int word){
-        if(verificarBloque(dir)) {
-            return findWord(dir, word);
+    public CacheInstrucciones(Bus b){
+        bus = b;
+        //TODO: INICIALIZAR CACHE Y ETIQUETAS
+    };
+    public int getInstruccion(int block, int word){
+        if(verificarBloque(block)) {
+            return findWord(block, word);
         } else {
-            traeBloque();
-            return findWord(dir, word);
+            traeBloque(block);
+            return findWord(block, word);
         }
     };
-    public boolean verificarBloque(int dir){
-        if(cache[4][dir%(8*4)]==dir) {
+    public boolean verificarBloque(int block){
+        if(cache[4][block%8]==block) {
             return true;
         } else {
             return false;
         }
         
     };
+    
     public int findWord(int block, int word){return cache[word][block%8];};
-    public void traeBloque(){};
+    
+    public void traeBloque(int block){
+        int[] bloque = new int[4];
+        bloque = bus.getBloque(block);
+        for(int i=0; i<4; i++) {
+            cache[i][block%8] = bloque[i];
+        }
+        cache[4][block%8] = block;
+    };
     Bus bus; 
 }

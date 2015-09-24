@@ -21,16 +21,18 @@ public class Nucleo {
     int pc;
     int rl;
     
-    public Nucleo(int id, Bus bus){
+    public Nucleo(int id, Bus bus){ // recibe el bus compartido que tiene la memoria compartida
         nid = id;
-        ci = new CacheInstrucciones(bus);
+        ci = new CacheInstrucciones(bus); 
     };
     public boolean Execute(){
         int instruccion = RequestInst();
-        int maskb1 = 61440;
+        // máscaras para obtener los datos de la instrucción
+        int maskb1 = 61440; 
         int maskb2 = 3840;
         int maskb3 = 240;
         int maskb4 = 15;
+        
         int op = (instruccion&maskb1)>>(4*3);
         int r1 = (instruccion&maskb2)>>(4*2);
         int r2 = (instruccion&maskb2)>>(4*1);
@@ -88,14 +90,11 @@ public class Nucleo {
         }
         return true;
     };
+    
     public int RequestInst(){
-        int block = pc;
-        int word = 0;
-        while(block%8!=0){
-            block-=1;
-            word++;
-        }
-        return ci.getInstruccion(block, word);
+        int block = pc/16; //busco el bloque en el que está la dirección
+        int word = pc/4; //# de palabra dentro del bloque
+        return ci.getInstruccion(block, word%4); //pide a la cache la instrucción
     };
     
     public void Write(int dir, int[] bloque){};

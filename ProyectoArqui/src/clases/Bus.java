@@ -11,7 +11,13 @@ package clases;
  */
 public class Bus {
     public Bus(Memoria m){mem = m;};
-    public synchronized int[] getBloque(int dir){return (new int[4]);};
-    public synchronized void setBloque(int dir, int bloque[]){};
+    
+    public synchronized int[] getBloque(int bloque){
+        return mem.Read(bloque);
+    };
+    
+    public synchronized void setBloque(int bloque, int res[]){
+        //TODO
+    };
     Memoria mem;
 }
