@@ -10,6 +10,7 @@ package clases;
  * @author dave
  */
 public class Bus {
+    Memoria mem;
     public Bus(Memoria m){mem = m;};
     
     public synchronized int[] getBloque(int bloque){
@@ -19,5 +20,4 @@ public class Bus {
     public synchronized void setBloque(int bloque, int res[]){
         //TODO
     };
-    Memoria mem;
 }

@@ -13,7 +13,14 @@ public class CacheInstrucciones {
     int cache[][] = new int[5][8];
     public CacheInstrucciones(Bus b){
         bus = b;
-        //TODO: INICIALIZAR CACHE Y ETIQUETAS
+        for(int i=0; i<cache.length-1; i++) {
+            for(int j=0; j<cache[i].length; j++) {
+                cache[i][j]=0;
+            }
+        }
+        for(int j=0; j<cache[4].length; j++) {
+            cache[4][j]=-1;
+        }
     };
     public int getInstruccion(int block, int word){
         if(verificarBloque(block)) {

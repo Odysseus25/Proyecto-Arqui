@@ -9,12 +9,12 @@ package clases;
  *
  * @author dave
  */
-public class Hilo {
+public class EstructuraHilo {
         int hid;
         int hpc;
         private int estado;
         int reg[] = new int[32];
-        public Hilo(int hid, int hpc, int estado, int[] reg){
+        public EstructuraHilo(int hid, int hpc, int estado, int[] reg){
             this.hid=hid;
             this.hpc=hpc;
             this.estado=estado;

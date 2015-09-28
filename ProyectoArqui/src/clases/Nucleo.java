@@ -4,9 +4,10 @@
  * and open the template in the editor.
  */
 package clases;
-
-import java.util.*;
-import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.BrokenBarrierException;
+import java.util.concurrent.CyclicBarrier;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -15,15 +16,49 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 public class Nucleo {
     double quantum;
     int nid;
-    Hilo hilo;
+    EstructuraHilo hilo;
     CacheInstrucciones ci;
     int r[] = new int[32];
     int pc;
     int rl;
+
+    public class HiloCPU implements Runnable {
+
+        CyclicBarrier barrera;
+        /**
+         * Constructor that passes the arrays and the shared barrier to the thread.
+         *
+         * @param barrera
+         */
+        public HiloCPU(CyclicBarrier barrera) {
+            super();
+            this.barrera = barrera;
+        }
+
+        /**
+         *
+         */
+        @Override
+        public void run() {
+            Execute();
+            try {
+                barrera.await();
+            } catch (InterruptedException ex) {
+                Logger.getLogger(Nucleo.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (BrokenBarrierException ex) {
+                Logger.getLogger(Nucleo.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+
+    }
     
-    public Nucleo(int id, Bus bus){ // recibe el bus compartido que tiene la memoria compartida
+    HiloCPU thread;
+    
+    public Nucleo(int id, Bus bus, CyclicBarrier barrera){ // recibe el bus compartido que tiene la memoria compartida
         nid = id;
-        ci = new CacheInstrucciones(bus); 
+        ci = new CacheInstrucciones(bus);
+        thread = new HiloCPU(barrera);
     };
     public boolean Execute(){
         int instruccion = RequestInst();
@@ -100,11 +135,11 @@ public class Nucleo {
     public void Write(int dir, int[] bloque){};
     public int[] Read(int dir){return (new int[4]);};
     
-    public Hilo getHilo(){
+    public EstructuraHilo getHilo(){
         return hilo;
     };
     
-    public void setHilo(Hilo h){
+    public void setHilo(EstructuraHilo h){
         this.hilo=h;
     };
     
