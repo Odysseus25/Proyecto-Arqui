@@ -19,6 +19,9 @@ public class EstructuraHilo {
             this.hpc=hpc;
             this.estado=estado;
             this.reg=reg;
+            for(int i=0; i<32; i++) {
+                reg[i] = 0;
+            }
         };
 
         /**

@@ -10,6 +10,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Scanner;
 import java.util.Vector;
 
 /**
@@ -22,13 +23,12 @@ public class ProyectoArqui {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // TODO code application logic here
         Memoria mem = new Memoria(2);
-        mem.guardaHilos(cargaHilos(args[0]));
-    }
-    
-    public static Vector<Integer> cargaHilos(String directorio) {
+        System.out.println("Ingrese el directorio de hilos: ");
+        Scanner in = new Scanner(System.in);
+        String directorio = in.nextLine();
         File f = new File(directorio);
+        int numH=0;
         if (f.exists()){
             File[] ficheros = f.listFiles();
             Vector<Integer> res = new Vector<Integer>();
@@ -36,14 +36,21 @@ public class ProyectoArqui {
             for (File fichero : ficheros) {
                 tmp = leeArchivo(fichero);
                 res.addAll(tmp);
+                numH++;
             }
-            return res;
+            if(mem.guardaHilos(res)) {
+                
+            } else {
+                System.err.println("No se pudieron guardar los hilos");
+            }
         }
         else {
-            return null; 
+            System.err.println("Error con el directorio"); 
         }
-
+        System.out.println(mem);
     }
+    
+
     
     public static Vector<Integer> leeArchivo(File archivo) {
         BufferedReader br = null;
@@ -58,12 +65,17 @@ public class ProyectoArqui {
             while ((sCurrentLine = br.readLine()) != null) {
                 String[] nums = sCurrentLine.split(" ");
                 int[] inst = new int[4];
-                int res = 65535;
+                //Mascara 0x00000000
+                int res = 0;
+                //Ciclo que parsea la linea, para meter la instruccion en un solo entero
                 for(int i=0;i<4;i++) {
                     inst[i] = Integer.parseInt(nums[i]);
-                    inst[i] = inst[i] << (4*(3-i));
-                    res = res & inst[i];
+                    //System.out.println("hexnum: "+Integer.toHexString( inst[i] ));
+                    inst[i] = inst[i] << (int)(4*(6-i*2));
+                    res = res | inst[i];
+                    //System.out.println("hex: "+Integer.toHexString( res ));
                 }
+                //System.out.println(res+" ");
                 vres.add(res);
             }
             return vres;

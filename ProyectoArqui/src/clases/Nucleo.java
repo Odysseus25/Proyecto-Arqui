@@ -59,6 +59,10 @@ public class Nucleo {
         nid = id;
         ci = new CacheInstrucciones(bus);
         thread = new HiloCPU(barrera);
+        for(int i=0; i<32; i++) {
+            r[i] = 0;
+        }
+            
     };
     public boolean Execute(){
         int instruccion = RequestInst();

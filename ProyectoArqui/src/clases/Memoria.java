@@ -8,7 +8,6 @@ package clases;
 import java.util.Vector;
 
 /**
- *
  * @author dave
  */
 public class Memoria {
@@ -26,7 +25,7 @@ public class Memoria {
         }
     }
     public boolean guardaHilos(Vector<Integer> instrucciones) {
-        if(instrucciones.size()<=memInst.length) {
+        if(instrucciones.size()>=memInst.length) {
             return false;
         }
         for(int i=0; i<instrucciones.size(); i++) {
@@ -49,4 +48,8 @@ public class Memoria {
             return new int[4];
         }
     };
+    public String toString(){
+        
+        return "(" + memInst[0] + ", " + memInst[1] + ", " + memInst[5] + ")";
+    }
 }
