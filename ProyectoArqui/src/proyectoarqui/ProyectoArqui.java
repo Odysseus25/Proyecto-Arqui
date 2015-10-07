@@ -12,6 +12,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Scanner;
 import java.util.Vector;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CyclicBarrier;
 
 /**
  *
@@ -23,6 +25,8 @@ public class ProyectoArqui {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        ConcurrentLinkedQueue<EstructuraHilo> colaEjecucion = new ConcurrentLinkedQueue<>();
+
         Memoria mem = new Memoria(2);
         System.out.println("Ingrese el directorio de hilos: ");
         Scanner in = new Scanner(System.in);
@@ -56,6 +60,13 @@ public class ProyectoArqui {
             System.err.println("Error con el directorio"); 
         }
         System.out.println(mem);
+        
+        Bus busInstrucciones = new Bus(mem);
+        CyclicBarrier barrera = new CyclicBarrier(2);
+        Nucleo n1 = new Nucleo(1, busInstrucciones, barrera);
+        //Nucleo n2 = new Nucleo(2, busInstrucciones, barrera);
+        
+        
     }
     
 
@@ -67,7 +78,7 @@ public class ProyectoArqui {
 
             String sCurrentLine;
 
-            br = new BufferedReader(new FileReader(archivo));
+            br = new BufferedReader(new FileReader( archivo));
             
             Vector<Integer> vres = new Vector<Integer>();
             while ((sCurrentLine = br.readLine()) != null) {

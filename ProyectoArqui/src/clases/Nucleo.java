@@ -21,10 +21,11 @@ public class Nucleo {
     int r[] = new int[32];
     int pc;
     int rl;
-
+    
     public class HiloCPU implements Runnable {
-
+        
         CyclicBarrier barrera;
+        private boolean ultimaInstruccion; 
         /**
          * Constructor that passes the arrays and the shared barrier to the thread.
          *
@@ -33,24 +34,116 @@ public class Nucleo {
         public HiloCPU(CyclicBarrier barrera) {
             super();
             this.barrera = barrera;
+            ultimaInstruccion = true;
         }
-
+        
         /**
          *
          */
         @Override
         public void run() {
-            Execute();
+            int instruccion = RequestInst();
+            // máscaras para obtener los datos de la instrucción
+            long maskb1 = 2130706432;
+            int  maskb2 = 16711680;
+            int maskb3 = 65280;
+            int maskb4 = 255;
+            
+            long lop = (instruccion&maskb1)>>(8*3);
+            int op = (int) (long) lop;
+            int r1 = (instruccion&maskb2)>>(8*2);
+            int r2 = (instruccion&maskb3)>>(8*1);
+            int r3 = (instruccion&maskb4);
+            switch (op) {
+                case 8:     //DADDI, SUMA CON LITERAL
+                    r[r2]=r[r1]+r3;
+                    setUltimaInstruccion(true);
+                    break;
+                case 32:    //DADD, SUMA CON REGISTRO
+                    r[r3]=r[r1]+r[r2];
+                    setUltimaInstruccion(true);
+                    break;
+                case 34:    //DSUB, RESTA
+                    r[r3]=r[r1]-r[r2];
+                    setUltimaInstruccion(true);
+                    break;
+                case 12:    //DMUL, MULTIPLICACION
+                    r[r3]=r[r1]*r[r2];
+                    setUltimaInstruccion(true);
+                    break;
+                case 14:    //DDIV, DIVISION
+                    r[r3]=r[r1]/r[r2];
+                    setUltimaInstruccion(true);
+                    break;
+                case 35:    //LW, LOAD
+                    //TODO
+                    setUltimaInstruccion(true);
+                    break;
+                case 43:    //SW, STORE
+                    //TODO
+                    setUltimaInstruccion(true);
+                    break;
+                case 4:     //BEQZ, SALTO CONDICIONAL IGUAL A CERO
+                    if(r[r1]==0) {
+                        pc = r3;
+                    }
+                    setUltimaInstruccion(true);
+                    break;
+                case 5:     //BNEZ, SALTO CONDICIONAL NO IGUAL
+                    if(r[r1]!=0) {
+                        pc = r3;
+                    }
+                    setUltimaInstruccion(true);
+                    break;
+                case 3:     //JAL, SALTO A PARTIR DE DONDE VOY
+                    r[31]=pc;
+                    pc+=r3;
+                    setUltimaInstruccion(true);
+                    break;
+                case 2:     //JR, SALTO CON REGISTRO
+                    pc=r[r1];
+                    setUltimaInstruccion(true);
+                    break;
+                case 11:    //LL, LOAD LINKED
+                    //TODO
+                    setUltimaInstruccion(true);
+                    break;
+                case 13:    //SC, STORE CONDITIONAL
+                    //TODO
+                    setUltimaInstruccion(false);
+                    break;
+                case 63:    //FIN, FIN
+                    setUltimaInstruccion(false);
+                default:
+                    System.err.println("INSTRUCCION INVALIDA");
+                    setUltimaInstruccion(false);
+                    break;
+            }
+            
             try {
                 barrera.await();
             } catch (InterruptedException ex) {
                 Logger.getLogger(Nucleo.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (BrokenBarrierException ex) {
+            }                       catch (BrokenBarrierException ex) {
                 Logger.getLogger(Nucleo.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
 
+        /**
+         * @return the ultimaInstruccion veme la belleza
+         */
+        public boolean isUltimaInstruccion() {
+            return ultimaInstruccion;
+        }
 
+        /**
+         * @param ultimaInstruccion the ultimaInstruccion to set
+         */
+        public void setUltimaInstruccion(boolean ultimaInstruccion) {
+            this.ultimaInstruccion = ultimaInstruccion;
+        }
+        
+        
     }
     
     HiloCPU thread;
@@ -65,69 +158,8 @@ public class Nucleo {
             
     };
     public boolean Execute(){
-        int instruccion = RequestInst();
-        // máscaras para obtener los datos de la instrucción
-        int maskb1 = 61440; 
-        int maskb2 = 3840;
-        int maskb3 = 240;
-        int maskb4 = 15;
-        
-        int op = (instruccion&maskb1)>>(4*3);
-        int r1 = (instruccion&maskb2)>>(4*2);
-        int r2 = (instruccion&maskb2)>>(4*1);
-        int r3 = (instruccion&maskb2);
-        switch (op) {
-            case 8:     //DADDI, SUMA CON LITERAL
-                r[r2]=r[r1]+r3;
-                break;
-            case 32:    //DADD, SUMA CON REGISTRO
-                r[r3]=r[r1]+r[r2];
-                break;
-            case 34:    //DSUB, RESTA
-                r[r3]=r[r1]-r[r2];
-                break;
-            case 12:    //DMUL, MULTIPLICACION
-                r[r3]=r[r1]*r[r2];
-                break;
-            case 14:    //DDIV, DIVISION
-                r[r3]=r[r1]/r[r2];
-                break;
-            case 35:    //LW, LOAD
-                //TODO
-                break;
-            case 43:    //SW, STORE
-                //TODO
-                break;
-            case 4:     //BEQZ, SALTO CONDICIONAL IGUAL A CERO
-                if(r[r1]==0) {
-                    pc = r3;
-                }
-                break;
-            case 5:     //BNEZ, SALTO CONDICIONAL NO IGUAL
-                if(r[r1]!=0) {
-                    pc = r3;
-                }
-                break;
-            case 3:     //JAL, SALTO A PARTIR DE DONDE VOY
-                r[31]=pc;
-                pc+=r3;
-                break;
-            case 2:     //JR, SALTO CON REGISTRO
-                pc=r[r1];
-                break;
-            case 11:    //LL, LOAD LINKED
-                //TODO
-                break;
-            case 13:    //SC, STORE CONDITIONAL
-                //TODO
-                break;
-            case 63:    //FIN, FIN
-                return false;                                        
-            default:
-                System.err.println("INSTRUCCION INVALIDA");
-                break;
-        }
-        return true;
+        thread.run();
+        return thread.isUltimaInstruccion();
     };
     
     public int RequestInst(){
@@ -147,6 +179,8 @@ public class Nucleo {
         this.hilo=h;
     };
     
-    
+    public void guardaHilo(){
+        this.hilo = new EstructuraHilo(hilo.getHID(),  );
+    }
     
 } 

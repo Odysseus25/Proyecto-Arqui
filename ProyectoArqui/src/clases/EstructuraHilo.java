@@ -10,8 +10,8 @@ package clases;
  * @author dave
  */
 public class EstructuraHilo {
-        int hid;
-        int hpc;
+        private int hid;
+        private int hpc;
         private int estado;
         int reg[] = new int[32];
         public EstructuraHilo(int hid, int hpc, int estado, int[] reg){
@@ -37,4 +37,32 @@ public class EstructuraHilo {
         public void setEstado(int estado) {
             this.estado = estado;
         }
+
+    /**
+     * @return the hid
+     */
+    public int getHid() {
+        return hid;
+    }
+
+    /**
+     * @param hid the hid to set
+     */
+    public void setHid(int hid) {
+        this.hid = hid;
+    }
+
+    /**
+     * @return the hpc
+     */
+    public int getHpc() {
+        return hpc;
+    }
+
+    /**
+     * @param hpc the hpc to set
+     */
+    public void setHpc(int hpc) {
+        this.hpc = hpc;
+    }
     }    
