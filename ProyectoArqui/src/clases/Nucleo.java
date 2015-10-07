@@ -180,7 +180,7 @@ public class Nucleo {
     };
     
     public void guardaHilo(){
-        this.hilo = new EstructuraHilo(hilo.getHID(),  );
+        this.hilo = new EstructuraHilo(hilo.getHid(), pc, 0, r);
     }
     
 } 

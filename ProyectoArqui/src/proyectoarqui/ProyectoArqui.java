@@ -49,6 +49,7 @@ public class ProyectoArqui {
                 hidActual++;
                 hpcActual+=tmp.size()*4;
                 res.addAll(tmp);
+                colaEjecucion.add(hilo);
             }
             if(mem.guardaHilos(res)) {
                 
@@ -60,6 +61,16 @@ public class ProyectoArqui {
             System.err.println("Error con el directorio"); 
         }
         System.out.println(mem);
+        
+        System.out.println("largo de la cola: " + colaEjecucion.size());
+        
+        int t = colaEjecucion.poll().getHpc();
+        //System.out.println(colaEjecucion.poll().getHpc());
+        //int t = colaEjecucion.poll().getHpc();
+        int[] inst = mem.Read(t/4);
+        System.out.println("inst 0: " +  Integer.toHexString(inst[1]));
+        
+       // System.out.println(Integer.toHexString(mem.memInst[t/8]));
         
         Bus busInstrucciones = new Bus(mem);
         CyclicBarrier barrera = new CyclicBarrier(2);

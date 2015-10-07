@@ -12,7 +12,7 @@ import java.util.Vector;
  */
 public class Memoria {
     int latencia;
-    int memInst[]= new int[640];
+   public  int memInst[]= new int[640];
     int memData[]= new int[1408];
     public Memoria(int latencia) {
         this.latencia=latencia;
