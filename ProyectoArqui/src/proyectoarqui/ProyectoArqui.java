@@ -18,7 +18,7 @@ import java.util.Vector;
  * @author Ulises
  */
 public class ProyectoArqui {
-
+   
     /**
      * @param args the command line arguments
      */
@@ -28,15 +28,23 @@ public class ProyectoArqui {
         Scanner in = new Scanner(System.in);
         String directorio = in.nextLine();
         File f = new File(directorio);
-        int numH=0;
+        
+        int hpcActual = 0;
+        int hidActual = 0;
         if (f.exists()){
             File[] ficheros = f.listFiles();
             Vector<Integer> res = new Vector<Integer>();
             Vector<Integer> tmp = new Vector<Integer>();
             for (File fichero : ficheros) {
+                int[] reg= new int[32];
+                for(int i = 0; i<reg.length; i++) {
+                    reg[i]=0;
+                }
+                EstructuraHilo hilo = new EstructuraHilo(hidActual, hpcActual, 0, reg);
                 tmp = leeArchivo(fichero);
+                hidActual++;
+                hpcActual+=tmp.size()*4;
                 res.addAll(tmp);
-                numH++;
             }
             if(mem.guardaHilos(res)) {
                 
@@ -63,6 +71,7 @@ public class ProyectoArqui {
             
             Vector<Integer> vres = new Vector<Integer>();
             while ((sCurrentLine = br.readLine()) != null) {
+                
                 String[] nums = sCurrentLine.split(" ");
                 int[] inst = new int[4];
                 //Mascara 0x00000000
