@@ -50,6 +50,17 @@ public class Memoria {
     };
     public String toString(){
         
-        return "(" + memInst[0] + ", " + memInst[1] + ", " + memInst[5] + ")";
+        return "(" + Integer.toHexString(memInst[0]) + ", " + Integer.toHexString(memInst[1]) + 
+                ", " + Integer.toHexString(memInst[2]) + ", " + Integer.toHexString(memInst[3]) + 
+                ", " + Integer.toHexString(memInst[4]) + ", " + Integer.toHexString(memInst[5]) + 
+                ", " + Integer.toHexString(memInst[6]) + ", " + Integer.toHexString(memInst[7]) + 
+                ", " + Integer.toHexString(memInst[8]) + ", " + Integer.toHexString(memInst[9]) + 
+                ", " + Integer.toHexString(memInst[10]) + ", " + Integer.toHexString(memInst[11]) + 
+                ", " + Integer.toHexString(memInst[12]) + ", " + Integer.toHexString(memInst[13]) + 
+                ", " + Integer.toHexString(memInst[14]) + ", " + Integer.toHexString(memInst[15]) + 
+                ", " + Integer.toHexString(memInst[16]) + ", " + Integer.toHexString(memInst[17]) + 
+                ", " + Integer.toHexString(memInst[18]) + ", " + Integer.toHexString(memInst[19]) +
+                
+                ")";
     }
 }
