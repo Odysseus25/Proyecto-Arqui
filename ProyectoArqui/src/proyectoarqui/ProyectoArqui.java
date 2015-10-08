@@ -64,13 +64,6 @@ public class ProyectoArqui {
         
         System.out.println("largo de la cola: " + colaEjecucion.size());
         
-        int t = colaEjecucion.poll().getHpc();
-        //System.out.println(colaEjecucion.poll().getHpc());
-        //int t = colaEjecucion.poll().getHpc();
-        int[] inst = mem.Read(t/4);
-        System.out.println("inst 0: " +  Integer.toHexString(inst[1]));
-        
-       // System.out.println(Integer.toHexString(mem.memInst[t/8]));
         
         Bus busInstrucciones = new Bus(mem);
         CyclicBarrier barrera = new CyclicBarrier(2);
@@ -96,18 +89,15 @@ public class ProyectoArqui {
                 
                 String[] nums = sCurrentLine.split(" ");
                 int[] inst = new int[4];
-                //Mascara 0x00000000
-                int res = 0;
                 //Ciclo que parsea la linea, para meter la instruccion en un solo entero
                 for(int i=0;i<4;i++) {
                     inst[i] = Integer.parseInt(nums[i]);
-                    //System.out.println("hexnum: "+Integer.toHexString( inst[i] ));
-                    inst[i] = inst[i] << (int)(4*(6-i*2));
-                    res = res | inst[i];
-                    //System.out.println("hex: "+Integer.toHexString( res ));
+                    System.out.print(""+inst[i]+ " ");
+                    vres.add(inst[i]);
                 }
+                System.out.print("\n");
                 //System.out.println(res+" ");
-                vres.add(res);
+                
             }
             return vres;
 

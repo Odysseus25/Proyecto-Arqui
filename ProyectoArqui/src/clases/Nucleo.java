@@ -42,18 +42,12 @@ public class Nucleo {
          */
         @Override
         public void run() {
-            int instruccion = RequestInst();
-            // máscaras para obtener los datos de la instrucción
-            long maskb1 = 2130706432;
-            int  maskb2 = 16711680;
-            int maskb3 = 65280;
-            int maskb4 = 255;
+            int[] instruccion = RequestInst();
             
-            long lop = (instruccion&maskb1)>>(8*3);
-            int op = (int) (long) lop;
-            int r1 = (instruccion&maskb2)>>(8*2);
-            int r2 = (instruccion&maskb3)>>(8*1);
-            int r3 = (instruccion&maskb4);
+            int op = instruccion[0];
+            int r1 = instruccion[1];
+            int r2 = instruccion[2];
+            int r3 = instruccion[3];
             switch (op) {
                 case 8:     //DADDI, SUMA CON LITERAL
                     r[r2]=r[r1]+r3;
@@ -122,9 +116,7 @@ public class Nucleo {
             
             try {
                 barrera.await();
-            } catch (InterruptedException ex) {
-                Logger.getLogger(Nucleo.class.getName()).log(Level.SEVERE, null, ex);
-            }                       catch (BrokenBarrierException ex) {
+            } catch (InterruptedException | BrokenBarrierException ex) {
                 Logger.getLogger(Nucleo.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
@@ -162,7 +154,7 @@ public class Nucleo {
         return thread.isUltimaInstruccion();
     };
     
-    public int RequestInst(){
+    public int[] RequestInst(){
         int block = pc/16; //busco el bloque en el que está la dirección
         int word = pc/4; //# de palabra dentro del bloque
         return ci.getInstruccion(block, word%4); //pide a la cache la instrucción

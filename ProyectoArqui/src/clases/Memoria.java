@@ -12,8 +12,8 @@ import java.util.Vector;
  */
 public class Memoria {
     int latencia;
-   public  int memInst[]= new int[640];
-    int memData[]= new int[1408];
+   public  int memInst[]= new int[640*4];
+    int memData[]= new int[1408*4];
     public Memoria(int latencia) {
         this.latencia=latencia;
         for(int i=0; i<memInst.length; i++) {
@@ -37,29 +37,28 @@ public class Memoria {
     public int[] Read(int bloque){
         //TODO: delay(latencia);
         if(bloque < 160) {
-            int[] res = new int[4];
-            res[0] = memInst[bloque*4];
-            res[1] = memInst[(bloque*4)+1];
-            res[2] = memInst[(bloque*4)+2];
-            res[3] = memInst[(bloque*4)+3];
+            int[] res = new int[4*4];
+            for(int i=0; i<16; i++) {
+                res[i] = memInst[(bloque*16)+i];
+            }
             return res;
         } else {
             //TODO RETURN DATA
-            return new int[4];
+            return new int[4*4];
         }
     };
     public String toString(){
         
-        return "(" + Integer.toHexString(memInst[0]) + ", " + Integer.toHexString(memInst[1]) + 
-                ", " + Integer.toHexString(memInst[2]) + ", " + Integer.toHexString(memInst[3]) + 
-                ", " + Integer.toHexString(memInst[4]) + ", " + Integer.toHexString(memInst[5]) + 
-                ", " + Integer.toHexString(memInst[6]) + ", " + Integer.toHexString(memInst[7]) + 
-                ", " + Integer.toHexString(memInst[8]) + ", " + Integer.toHexString(memInst[9]) + 
-                ", " + Integer.toHexString(memInst[10]) + ", " + Integer.toHexString(memInst[11]) + 
-                ", " + Integer.toHexString(memInst[12]) + ", " + Integer.toHexString(memInst[13]) + 
-                ", " + Integer.toHexString(memInst[14]) + ", " + Integer.toHexString(memInst[15]) + 
-                ", " + Integer.toHexString(memInst[16]) + ", " + Integer.toHexString(memInst[17]) + 
-                ", " + Integer.toHexString(memInst[18]) + ", " + Integer.toHexString(memInst[19]) +
+        return "(" + (memInst[0]) + ", " + (memInst[1]) + 
+                ", " + (memInst[2]) + ", " + (memInst[3]) + 
+                ", " + (memInst[4]) + ", " + (memInst[5]) + 
+                ", " + (memInst[6]) + ", " + (memInst[7]) + 
+                ", " + (memInst[8]) + ", " + (memInst[9]) + 
+                ", " + (memInst[10]) + ", " + (memInst[11]) + 
+                ", " + (memInst[12]) + ", " + (memInst[13]) + 
+                ", " + (memInst[14]) + ", " + (memInst[15]) + 
+                ", " + (memInst[16]) + ", " + (memInst[17]) + 
+                ", " + (memInst[18]) + ", " + (memInst[19]) +
                 
                 ")";
     }
