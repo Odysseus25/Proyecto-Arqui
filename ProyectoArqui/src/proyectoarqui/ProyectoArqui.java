@@ -92,11 +92,9 @@ public class ProyectoArqui {
                 //Ciclo que parsea la linea, para meter la instruccion en un solo entero
                 for(int i=0;i<4;i++) {
                     inst[i] = Integer.parseInt(nums[i]);
-                    System.out.print(""+inst[i]+ " ");
+                    //System.out.print(""+inst[i]+ " ");
                     vres.add(inst[i]);
                 }
-                System.out.print("\n");
-                //System.out.println(res+" ");
                 
             }
             return vres;
