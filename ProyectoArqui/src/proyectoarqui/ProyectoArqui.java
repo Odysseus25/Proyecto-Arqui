@@ -25,8 +25,8 @@ public class ProyectoArqui {
      * @param args the command line arguments
      */
     public static void main(String[] args) throws InterruptedException {
+        //Cargamos Memoria y variables
         ConcurrentLinkedQueue<EstructuraHilo> colaEjecucion = new ConcurrentLinkedQueue<>();
-
         Memoria mem = new Memoria(2);
         System.out.println("Ingrese el directorio de hilos: ");
         Scanner in = new Scanner(System.in);
@@ -60,16 +60,17 @@ public class ProyectoArqui {
         else {
             System.err.println("Error con el directorio"); 
         }
-        System.out.println(mem);
         
+        
+        System.out.println(mem);
         System.out.println("largo de la cola: " + colaEjecucion.size());
         
-        
+        //Cargamos objetos de simulación
         Bus busInstrucciones = new Bus(mem);
         CyclicBarrier barrera = new CyclicBarrier(1);
         Nucleo n1 = new Nucleo(1, 20, busInstrucciones, barrera);
-        //Nucleo n2 = new Nucleo(2, busInstrucciones, barrera);
         
+        //Empezamos a simular!
         int reloj=0;
         while(!colaEjecucion.isEmpty()) {
             EstructuraHilo t = colaEjecucion.poll();
