@@ -24,7 +24,7 @@ public class ProyectoArqui {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         ConcurrentLinkedQueue<EstructuraHilo> colaEjecucion = new ConcurrentLinkedQueue<>();
 
         Memoria mem = new Memoria(2);
@@ -47,7 +47,7 @@ public class ProyectoArqui {
                 EstructuraHilo hilo = new EstructuraHilo(hidActual, hpcActual, 0, reg);
                 tmp = leeArchivo(fichero);
                 hidActual++;
-                hpcActual+=tmp.size()*4;
+                hpcActual+=(tmp.size());
                 res.addAll(tmp);
                 colaEjecucion.add(hilo);
             }
@@ -66,9 +66,29 @@ public class ProyectoArqui {
         
         
         Bus busInstrucciones = new Bus(mem);
-        CyclicBarrier barrera = new CyclicBarrier(2);
-        Nucleo n1 = new Nucleo(1, busInstrucciones, barrera);
+        CyclicBarrier barrera = new CyclicBarrier(1);
+        Nucleo n1 = new Nucleo(1, 20, busInstrucciones, barrera);
         //Nucleo n2 = new Nucleo(2, busInstrucciones, barrera);
+        
+        int reloj=0;
+        while(!colaEjecucion.isEmpty()) {
+            EstructuraHilo t = colaEjecucion.poll();
+            System.out.println("HID: "+t.getHid()+", HPC: "+t.getHpc());
+            n1.setHilo(t);
+            int tiempo=0;
+            System.out.println(n1);
+            while(n1.Execute()) {
+                tiempo++;
+                if(tiempo>=n1.getQuantum()) {
+                    System.out.println("SE ACABÓ EL QUANTUM");
+                    n1.guardaHilo();
+                    colaEjecucion.add(n1.getHilo());
+                    break;
+                } 
+            }
+            System.out.println(n1);
+            System.out.println("________________________________");
+        }
         
         
     }

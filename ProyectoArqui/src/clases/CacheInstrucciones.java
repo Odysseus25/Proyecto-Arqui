@@ -23,6 +23,7 @@ public class CacheInstrucciones {
         }
     };
     public int[] getInstruccion(int block, int word){
+        //System.out.println("bloque de inst: "+block);
         if(verificarBloque(block)) {
             return findWord(block, word);
         } else {
@@ -44,9 +45,10 @@ public class CacheInstrucciones {
     };
     
     public void traeBloque(int block){
+        //System.out.println("traje bloque");
         int[] bloque;
         bloque = bus.getBloque(block);
-        for(int i=0; i<cache.length; i++) {
+        for(int i=0; i<bloque.length; i++) {
             cache[i][block%8] = bloque[i];
         }
         cache[16][block%8] = block;

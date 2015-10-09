@@ -13,15 +13,12 @@ public class EstructuraHilo {
         private int hid;
         private int hpc;
         private int estado;
-        int reg[] = new int[32];
+        private int reg[] = new int[32];
         public EstructuraHilo(int hid, int hpc, int estado, int[] reg){
             this.hid=hid;
             this.hpc=hpc;
             this.estado=estado;
             this.reg=reg;
-            for(int i=0; i<32; i++) {
-                reg[i] = 0;
-            }
         };
 
         /**
@@ -64,5 +61,19 @@ public class EstructuraHilo {
      */
     public void setHpc(int hpc) {
         this.hpc = hpc;
+    }
+
+    /**
+     * @return the reg
+     */
+    public int[] getReg() {
+        return reg;
+    }
+
+    /**
+     * @param reg the reg to set
+     */
+    public void setReg(int[] reg) {
+        this.reg = reg;
     }
     }    

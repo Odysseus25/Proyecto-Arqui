@@ -47,6 +47,8 @@ public class Memoria {
             return new int[4*4];
         }
     };
+    
+    @Override
     public String toString(){
         
         return "(" + (memInst[0]) + ", " + (memInst[1]) + ", " + (memInst[2]) + ", " + (memInst[3]) + 
@@ -66,6 +68,22 @@ public class Memoria {
                 ", " + (memInst[56]) + ", " + (memInst[57]) + ", " + (memInst[58]) + ", " + (memInst[59]) +               
                 ", " + (memInst[60]) + ", " + (memInst[61]) + ", " + (memInst[62]) + ", " + (memInst[63]) + 
                 ", " + (memInst[64]) + ", " + (memInst[65]) + ", " + (memInst[66]) + ", " + (memInst[67]) +
+                ", " + (memInst[68]) + ", " + (memInst[69]) + ", " + (memInst[70]) + ", " + (memInst[71]) +               
+                ", " + (memInst[72]) + ", " + (memInst[73]) + ", " + (memInst[74]) + ", " + (memInst[75]) +               
+                ", " + (memInst[76]) + ", " + (memInst[77]) + ", " + (memInst[78]) + ", " + (memInst[79]) + 
+                ", " + (memInst[80]) + ", " + (memInst[81]) + ", " + (memInst[82]) + ", " + (memInst[83]) +
+                ", " + (memInst[84]) + ", " + (memInst[85]) + ", " + (memInst[86]) + ", " + (memInst[87]) +               
+                ", " + (memInst[88]) + ", " + (memInst[89]) + ", " + (memInst[90]) + ", " + (memInst[91]) +               
+                ", " + (memInst[92]) + ", " + (memInst[93]) + ", " + (memInst[94]) + ", " + (memInst[95]) + 
+                ", " + (memInst[96]) + ", " + (memInst[97]) + ", " + (memInst[98]) + ", " + (memInst[99]) +
+                ", " + (memInst[100]) + ", " + (memInst[101]) + ", " + (memInst[102]) + ", " + (memInst[103]) +               
+                ", " + (memInst[104]) + ", " + (memInst[105]) + ", " + (memInst[106]) + ", " + (memInst[107]) +               
+                ", " + (memInst[108]) + ", " + (memInst[109]) + ", " + (memInst[110]) + ", " + (memInst[111]) + 
+                ", " + (memInst[112]) + ", " + (memInst[113]) + ", " + (memInst[114]) + ", " + (memInst[115]) +
+                ", " + (memInst[116]) + ", " + (memInst[117]) + ", " + (memInst[118]) + ", " + (memInst[119]) +               
+                ", " + (memInst[120]) + ", " + (memInst[121]) + ", " + (memInst[122]) + ", " + (memInst[123]) +               
+                ", " + (memInst[124]) + ", " + (memInst[125]) + ", " + (memInst[126]) + ", " + (memInst[127]) + 
+                ", " + (memInst[128]) + ", " + (memInst[129]) + ", " + (memInst[130]) + ", " + (memInst[131]) +
                 ")";
     }
 }
