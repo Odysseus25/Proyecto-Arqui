@@ -119,17 +119,16 @@ public class ProyectoArqui {
             while(true) {//Ejecuto instrucción por instrucción
                 n1.Execute();
                 n2.Execute();
-                try {
+                try {//Espero a que se ejecuten las instrucciones de cada núcleo
                     System.out.println("barrera wait, mtid: "+Thread.currentThread().getId());
                     barrera.await();
-                    
                 } catch (BrokenBarrierException ex) {
                     System.err.println("MFT");
                     Logger.getLogger(ProyectoArqui.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 
-                finN1=!n1.isNoFin();
-                finN2=!n2.isNoFin();
+                finN1=n1.isFin();
+                finN2=n2.isFin();
                 reloj++;
                 tiempo1++;
                 tiempo2++;
@@ -150,8 +149,8 @@ public class ProyectoArqui {
                 }
             }
             //Determino si debo seguir o no el ciclo externo
-            finN1=!n1.isNoFin()||(tiempo1>=n1.getQuantum())||n1.isTerminado();
-            finN2=!n2.isNoFin()||(tiempo2>=n2.getQuantum())||n2.isTerminado();
+            finN1=n1.isFin()||(tiempo1>=n1.getQuantum())||n1.isTerminado();
+            finN2=n2.isFin()||(tiempo2>=n2.getQuantum())||n2.isTerminado();
             //Si algún núcleo está terminado (no hay hilo que darle), no muestre su información
             regN1=(n1.isTerminado())?"Duerme":""+n1;
             regN2=(n2.isTerminado())?"Duerme":""+n2;

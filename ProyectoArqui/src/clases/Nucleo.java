@@ -24,7 +24,7 @@ public class Nucleo {
     int rl;
     CyclicBarrier barrera;
     private boolean terminado;
-    private  AtomicBoolean noFin; 
+    private  AtomicBoolean fin; 
     
     /**
      * Constructor
@@ -105,35 +105,30 @@ public class Nucleo {
     /**
      * @return the noFin veme la belleza
      */
-    public boolean isNoFin() {
-        return noFin.get();
+    public boolean isFin() {
+        return fin.get();
     }
 
     /**
      * @param noFin the noFin to set
      */
-    public void setNoFin(boolean noFin) {
-        this.noFin.set(noFin);
+    public void setFin(boolean noFin) {
+        this.fin.set(noFin);
     }
 
     /**
      * Clase que implementa el estHilo para ejecutar las instrucciones paralelamente
      */
     public class HiloCPU extends Thread {
-        
-        
-
         /**
          * Constructor that passes the arrays and the shared barrier to the thread.
          *
          */
         public HiloCPU() {
             super();
-            noFin = new AtomicBoolean();
-            noFin.set(true);
+            fin = new AtomicBoolean();
+            fin.set(false);
         }
-
-        
         /**
          *
          */
@@ -153,7 +148,7 @@ public class Nucleo {
                     pc += 4;
                     r[r2]=r[r1]+r3;
                     System.out.println("N"+nid+": r"+r2+"="+r[r2]);
-                    setNoFin(true);
+                    setFin(false);
                     guardaHilo();
                     break;
                 case 32:    //DADD, SUMA CON REGISTRO
@@ -161,7 +156,7 @@ public class Nucleo {
                     pc += 4;
                     r[r3]=r[r1]+r[r2];
                     System.out.println("N"+nid+": r"+r3+"="+r[r3]);
-                    setNoFin(true);
+                    setFin(false);
                     guardaHilo();
                     break;
                 case 34:    //DSUB, RESTA
@@ -169,7 +164,7 @@ public class Nucleo {
                     pc += 4;
                     r[r3]=r[r1]-r[r2];
                     System.out.println("N"+nid+": r"+r3+"="+r[r3]);
-                    setNoFin(true);
+                    setFin(false);
                     guardaHilo();
                     break;
                 case 12:    //DMUL, MULTIPLICACION
@@ -177,7 +172,7 @@ public class Nucleo {
                     pc += 4;
                     r[r3]=r[r1]*r[r2];
                     System.out.println("N"+nid+": r"+r3+"="+r[r3]);
-                    setNoFin(true);
+                    setFin(false);
                     guardaHilo();
                     break;
                 case 14:    //DDIV, DIVISION
@@ -185,17 +180,17 @@ public class Nucleo {
                     pc += 4;
                     r[r3]=r[r1]/r[r2];
                     System.out.println("N"+nid+": r"+r3+"="+r[r3]);
-                    setNoFin(true);
+                    setFin(false);
                     guardaHilo();
                     break;
                 case 35:    //LW, LOAD
                     //TODO
-                    setNoFin(true);
+                    setFin(false);
                     guardaHilo();
                     break;
                 case 43:    //SW, STORE
                     //TODO
-                    setNoFin(true);
+                    setFin(false);
                     guardaHilo();
                     break;
                 case 4:     //BEQZ, SALTO CONDICIONAL IGUAL A CERO
@@ -204,7 +199,7 @@ public class Nucleo {
                     if(r[r1]==0) {
                         pc += (r3*4);
                     }
-                    setNoFin(true);
+                    setFin(false);
                     System.out.println("N"+nid+": pc=" +pc);
                     guardaHilo();
                     break;
@@ -214,7 +209,7 @@ public class Nucleo {
                     if(r[r1]!=0) {
                         pc += (r3*4);
                     }
-                    setNoFin(true);
+                    setFin(false);
                     System.out.println("N"+nid+": pc=" +pc);
                     guardaHilo();
                     break;
@@ -224,39 +219,39 @@ public class Nucleo {
                     r[31]=pc;
                     pc+=(r3);
                     System.out.println("N"+nid+": pc="+pc);
-                    setNoFin(true);
+                    setFin(false);
                     guardaHilo();
                     break;
                 case 2:     //JR, SALTO CON REGISTRO
                     pc += 4;
                     pc=r[r1];
-                    setNoFin(true);
+                    setFin(false);
                     guardaHilo();
                     break;
                 case 11:    //LL, LOAD LINKED
                     //TODO
-                    setNoFin(true);
+                    setFin(false);
                     guardaHilo();
                     break;
                 case 13:    //SC, STORE CONDITIONAL
                     //TODO
-                    setNoFin(true);
+                    setFin(false);
                     guardaHilo();
                     break;
                 case 63:    //FIN, FIN
                     System.out.println("N"+nid+": FIN t");
-                    setNoFin(false);
+                    setFin(true);
                     guardaHilo();
                     break;
                 default:
                     System.err.println("N"+nid+": INSTRUCCION INVALIDA");
-                    setNoFin(false);
+                    setFin(true);
                     guardaHilo();
                     break;
             }
             
             
-            try {
+            try {//Espero en la barrera para poder sincronizar el reloj.
                 System.out.println("barrera wait, tid: "+Thread.currentThread().getId());
                 barrera.await();
             } catch (InterruptedException | BrokenBarrierException ex) {
@@ -287,7 +282,7 @@ public class Nucleo {
                 @Override
                 public void run() {
                     System.out.println("N"+nid+": NOP");
-                    setNoFin(true);
+                    setFin(false);
                     try {
                         System.out.println("barrera wait, tid: "+Thread.currentThread().getId());
                         barrera.await();
