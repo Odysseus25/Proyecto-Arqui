@@ -35,11 +35,7 @@ public class Memoria {
     }
     public void Write(int bloque, int res[]){};
     public int[] Read(int bloque){
-        /*try {
-            Thread.sleep(latencia);                 //1000 milliseconds is one second.
-        } catch(InterruptedException ex) {
-            Thread.currentThread().interrupt();
-        }*/
+        //TODO: latencia
         if(bloque < 160) {
             int[] res = new int[4*4];
             for(int i=0; i<16; i++) {

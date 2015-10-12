@@ -35,7 +35,7 @@ public class ProyectoArqui {
         
         //Cargamos objetos de simulación
         Bus busInstrucciones = new Bus(mem);
-        CyclicBarrier barrera = new CyclicBarrier(1);
+        CyclicBarrier barrera = new CyclicBarrier(3);
         Nucleo n1 = new Nucleo(1, 20, busInstrucciones, barrera);
         Nucleo n2 = new Nucleo(2, 20, busInstrucciones, barrera);
         
@@ -59,9 +59,6 @@ public class ProyectoArqui {
         } else {
             n2.setTerminado(true);
         }
-        System.out.println("Reloj: "+reloj);
-        System.out.println("HID-N1: "+n1.getEstHilo().getHid()+", HPC-N1: "+n1.getEstHilo().getHpc());
-        System.out.println("HID-N2: "+n2.getEstHilo().getHid()+", HPC-N2: "+n2.getEstHilo().getHpc());
         //Tiempo de cada CPU inicia en 0
         int tiempo1=0;
         int tiempo2=0;
@@ -119,9 +116,20 @@ public class ProyectoArqui {
             String regN2=(n2.isTerminado())?"Duerme":""+n2;
             System.out.println("Nucleo 1: "+regN1+"\n"+"Nucleo 2: "+regN2);
             
-            finN1=false;
-            finN2=false;
-            while(n1.Execute()&&n2.Execute()) {//Ejecuto instrucción por instrucción
+            while(true) {//Ejecuto instrucción por instrucción
+                n1.Execute();
+                n2.Execute();
+                try {
+                    System.out.println("barrera wait, mtid: "+Thread.currentThread().getId());
+                    barrera.await();
+                    
+                } catch (BrokenBarrierException ex) {
+                    System.err.println("MFT");
+                    Logger.getLogger(ProyectoArqui.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                
+                finN1=!n1.isNoFin();
+                finN2=!n2.isNoFin();
                 reloj++;
                 tiempo1++;
                 tiempo2++;
