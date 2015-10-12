@@ -5,14 +5,14 @@
  */
 package clases;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 /**
  * @author dave
  */
 public class Memoria {
     int latencia;
-   public  int memInst[]= new int[640*4];
+    public  int memInst[]= new int[640*4];
     int memData[]= new int[1408*4];
     public Memoria(int latencia) {
         this.latencia=latencia;
@@ -24,7 +24,7 @@ public class Memoria {
             memData[i]=1;
         }
     }
-    public boolean guardaHilos(Vector<Integer> instrucciones) {
+    public boolean guardaHilos(ArrayList<Integer> instrucciones) {
         if(instrucciones.size()>=memInst.length) {
             return false;
         }
@@ -35,7 +35,11 @@ public class Memoria {
     }
     public void Write(int bloque, int res[]){};
     public int[] Read(int bloque){
-        //TODO: delay(latencia);
+        /*try {
+            Thread.sleep(latencia);                 //1000 milliseconds is one second.
+        } catch(InterruptedException ex) {
+            Thread.currentThread().interrupt();
+        }*/
         if(bloque < 160) {
             int[] res = new int[4*4];
             for(int i=0; i<16; i++) {

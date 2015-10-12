@@ -6,6 +6,7 @@
 package clases;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -16,11 +17,14 @@ import java.util.logging.Logger;
 public class Nucleo {
     private double quantum;
     int nid;
-    private EstructuraHilo hilo;
+    private EstructuraHilo estHilo;
     CacheInstrucciones ci;
     int r[] = new int[32];
     int pc;
     int rl;
+    CyclicBarrier barrera;
+    private boolean terminado;
+    private  AtomicBoolean noFin; 
     
     /**
      * Constructor
@@ -33,11 +37,11 @@ public class Nucleo {
         nid = id;
         this.quantum = quantum;
         ci = new CacheInstrucciones(bus);
-        thread = new HiloCPU(barrera);
+        this.barrera = barrera;
         for(int i=0; i<32; i++) {
             r[i] = 0;
         }
-
+        terminado=false;
     };    
 
     /**
@@ -69,38 +73,64 @@ public class Nucleo {
     }
 
     /**
-     * @return the hilo
+     * @return the estHilo
      */
-    public EstructuraHilo getHilo() {
-        return hilo;
+    public EstructuraHilo getEstHilo() {
+        return estHilo;
     }
 
     /**
-     * @param hilo the hilo to set
+     * @param hilo the estHilo to set
      */
-    public void setHilo(EstructuraHilo hilo) {
-        this.hilo = hilo;
+    public void setEstHilo(EstructuraHilo hilo) {
+        this.estHilo = hilo;
         pc=hilo.getHpc();
         r=hilo.getReg();
     }
 
     /**
-     * Clase que implementa el hilo para ejecutar las instrucciones paralelamente
+     * @return the terminado
+     */
+    public boolean isTerminado() {
+        return terminado;
+    }
+
+    /**
+     * @param terminado the terminado to set
+     */
+    public void setTerminado(boolean terminado) {
+        this.terminado = terminado;
+    }
+    
+    /**
+     * @return the noFin veme la belleza
+     */
+    public boolean isNoFin() {
+        return noFin.get();
+    }
+
+    /**
+     * @param noFin the noFin to set
+     */
+    public void setNoFin(boolean noFin) {
+        this.noFin.set(noFin);
+    }
+
+    /**
+     * Clase que implementa el estHilo para ejecutar las instrucciones paralelamente
      */
     public class HiloCPU extends Thread {
         
-        CyclicBarrier barrera;
-        private boolean ultimaInstruccion; 
+        
 
         /**
          * Constructor that passes the arrays and the shared barrier to the thread.
          *
-         * @param barrera
          */
-        public HiloCPU(CyclicBarrier barrera) {
+        public HiloCPU() {
             super();
-            this.barrera = barrera;
-            ultimaInstruccion = true;
+            noFin = new AtomicBoolean();
+            noFin.set(true);
         }
 
         
@@ -109,6 +139,7 @@ public class Nucleo {
          */
         @Override
         public void run() {
+            //System.out.println("tid: "+this.getId());
             int[] instruccion = RequestInst();
             
             int op = instruccion[0];
@@ -118,117 +149,121 @@ public class Nucleo {
             //System.out.println(""+op+" "+r1+" "+r2+" "+r3);
             switch (op) {
                 case 8:     //DADDI, SUMA CON LITERAL
-                    System.out.println("DADDI r"+r1+" #"+r3+" ->r"+r2);
+                    System.out.println(nid+": DADDI r"+r1+" #"+r3+" ->r"+r2);
                     pc += 4;
                     r[r2]=r[r1]+r3;
                     System.out.println("r"+r2+"="+r[r2]);
-                    setUltimaInstruccion(true);
+                    setNoFin(true);
+                    guardaHilo();
                     break;
                 case 32:    //DADD, SUMA CON REGISTRO
-                    System.out.println("DADD r"+r1+" r"+r2+" ->r"+r3);
+                    System.out.println(nid+": DADD r"+r1+" r"+r2+" ->r"+r3);
                     pc += 4;
                     r[r3]=r[r1]+r[r2];
                     System.out.println("r"+r3+"="+r[r3]);
-                    setUltimaInstruccion(true);
+                    setNoFin(true);
+                    guardaHilo();
                     break;
                 case 34:    //DSUB, RESTA
-                    System.out.println("DSUB r"+r1+" r"+r2+" ->r"+r3);
+                    System.out.println(nid+": DSUB r"+r1+" r"+r2+" ->r"+r3);
                     pc += 4;
                     r[r3]=r[r1]-r[r2];
                     System.out.println("r"+r3+"="+r[r3]);
-                    setUltimaInstruccion(true);
+                    setNoFin(true);
+                    guardaHilo();
                     break;
                 case 12:    //DMUL, MULTIPLICACION
-                    System.out.println("DMUL r"+r1+" r"+r2+" ->r"+r3);
+                    System.out.println(nid+": DMUL r"+r1+" r"+r2+" ->r"+r3);
                     pc += 4;
                     r[r3]=r[r1]*r[r2];
                     System.out.println("r"+r3+"="+r[r3]);
-                    setUltimaInstruccion(true);
+                    setNoFin(true);
+                    guardaHilo();
                     break;
                 case 14:    //DDIV, DIVISION
-                    System.out.println("DDIV r"+r1+" r"+r2+" ->r"+r3);
+                    System.out.println(nid+": DDIV r"+r1+" r"+r2+" ->r"+r3);
                     pc += 4;
                     r[r3]=r[r1]/r[r2];
                     System.out.println("r"+r3+"="+r[r3]);
-                    setUltimaInstruccion(true);
+                    setNoFin(true);
+                    guardaHilo();
                     break;
                 case 35:    //LW, LOAD
                     //TODO
-                    setUltimaInstruccion(true);
+                    setNoFin(true);
+                    guardaHilo();
                     break;
                 case 43:    //SW, STORE
                     //TODO
-                    setUltimaInstruccion(true);
+                    setNoFin(true);
+                    guardaHilo();
                     break;
                 case 4:     //BEQZ, SALTO CONDICIONAL IGUAL A CERO
-                    System.out.println("BEQZ r"+r1+" ->r"+r3);
+                    System.out.println(nid+": BEQZ r"+r1+" ->r"+r3);
                     pc += 4;
                     if(r[r1]==0) {
                         pc += (r3*4);
                     }
-                    setUltimaInstruccion(true);
+                    setNoFin(true);
                     System.out.println("pc: " +pc);
+                    guardaHilo();
                     break;
                 case 5:     //BNEZ, SALTO CONDICIONAL NO IGUAL
-                    System.out.println("BNEZ r"+r1+" ->r"+r3);
+                    System.out.println(nid+": BNEZ r"+r1+" ->r"+r3);
                     pc += 4;
                     if(r[r1]!=0) {
                         pc += (r3*4);
                     }
-                    setUltimaInstruccion(true);
+                    setNoFin(true);
                     System.out.println("pc: " +pc);
+                    guardaHilo();
                     break;
                 case 3:     //JAL, SALTO A PARTIR DE DONDE VOY
-                    System.out.println("JAL r"+r3+" ->pc: "+pc);
+                    System.out.println(nid+": JAL r"+r3+" ->pc: "+pc);
                     pc += 4;
                     r[31]=pc;
                     pc+=(r3);
                     System.out.println("pc: "+pc);
-                    setUltimaInstruccion(true);
+                    setNoFin(true);
+                    guardaHilo();
                     break;
                 case 2:     //JR, SALTO CON REGISTRO
                     pc += 4;
                     pc=r[r1];
-                    setUltimaInstruccion(true);
+                    setNoFin(true);
+                    guardaHilo();
                     break;
                 case 11:    //LL, LOAD LINKED
                     //TODO
-                    setUltimaInstruccion(true);
+                    setNoFin(true);
+                    guardaHilo();
                     break;
                 case 13:    //SC, STORE CONDITIONAL
                     //TODO
-                    setUltimaInstruccion(false);
+                    setNoFin(true);
+                    guardaHilo();
                     break;
                 case 63:    //FIN, FIN
-                    System.out.println("FIN t");
-                    setUltimaInstruccion(false);
+                    System.out.println(nid+": FIN t");
+                    setNoFin(false);
+                    guardaHilo();
                     break;
                 default:
-                    System.err.println("INSTRUCCION INVALIDA");
-                    setUltimaInstruccion(false);
+                    System.err.println(nid+": INSTRUCCION INVALIDA");
+                    setNoFin(false);
+                    guardaHilo();
                     break;
             }
             
+            
             try {
+                //System.out.println("barrera wait, tid: "+Thread.currentThread().getId());
                 barrera.await();
             } catch (InterruptedException | BrokenBarrierException ex) {
                 Logger.getLogger(Nucleo.class.getName()).log(Level.SEVERE, null, ex);
             }
             
-        }
-
-        /**
-         * @return the ultimaInstruccion veme la belleza
-         */
-        public boolean isUltimaInstruccion() {
-            return ultimaInstruccion;
-        }
-
-        /**
-         * @param ultimaInstruccion the ultimaInstruccion to set
-         */
-        public void setUltimaInstruccion(boolean ultimaInstruccion) {
-            this.ultimaInstruccion = ultimaInstruccion;
+            
         }
         
         
@@ -241,14 +276,42 @@ public class Nucleo {
      * @return true si no es FIN y false en otro caso
      */
     public boolean Execute(){
-        try {
-            getThread().run();
-            getThread().join();
-            return getThread().isUltimaInstruccion();
-        } catch (InterruptedException ex) {
-            System.err.println("QUE PUTAS");
-            Logger.getLogger(Nucleo.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
+        if(!isTerminado()) {
+            setThread(new HiloCPU());
+            getThread().start();
+            try {
+                getThread().join();
+            } catch (InterruptedException ex) {
+                Logger.getLogger(Nucleo.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            /*try {
+                Thread.sleep(3);                 //1000 milliseconds is one second.
+            } catch(InterruptedException ex) {
+                Thread.currentThread().interrupt();
+            }*/
+            return isNoFin();
+        } else {
+            Thread nop;
+            nop = new Thread() {
+                @Override
+                public void run() {
+                    try {
+                        System.out.println(nid+": NOP");
+                        //System.out.println("barrera wait, tid: "+Thread.currentThread().getId());
+                        barrera.await();
+                    } catch (InterruptedException | BrokenBarrierException ex) {
+                        Logger.getLogger(Nucleo.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }  
+            };
+
+            nop.start();
+            try {
+                nop.join();
+            } catch (InterruptedException ex) {
+                Logger.getLogger(Nucleo.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            return true;
         }
     };
     
@@ -264,7 +327,7 @@ public class Nucleo {
 
     
     public void guardaHilo(){
-        this.setHilo(new EstructuraHilo(getHilo().getHid(), pc, 0, r));
+        this.setEstHilo(new EstructuraHilo(getEstHilo().getHid(), pc, 0, r));
     }
     
     @Override
