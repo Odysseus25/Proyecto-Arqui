@@ -11,11 +11,13 @@ import java.util.ArrayList;
  * @author dave
  */
 public class Memoria {
-    int latencia;
+    private int latenciaM;
+    public int tiempoLatencia;
     public  int memInst[]= new int[640*4];
     int memData[]= new int[1408*4];
     public Memoria(int latencia) {
-        this.latencia=latencia;
+        this.latenciaM=latencia;
+        this.tiempoLatencia = 0;
         for(int i=0; i<memInst.length; i++) {
             memInst[i]=1;
             memData[i]=1;
@@ -36,16 +38,24 @@ public class Memoria {
     public void Write(int bloque, int res[]){};
     public int[] Read(int bloque){
         //TODO: latencia
-        if(bloque < 160) {
-            int[] res = new int[4*4];
-            for(int i=0; i<16; i++) {
-                res[i] = memInst[(bloque*16)+i];
-            }
-            return res;
-        } else {
-            //TODO RETURN DATA
-            return new int[4*4];
+        if(tiempoLatencia < latenciaM){
+            tiempoLatencia++;
+            return null;
         }
+        else{
+            tiempoLatencia = 0;
+            if(bloque < 160) {
+                int[] res = new int[4*4];
+                for(int i=0; i<16; i++) {
+                    res[i] = memInst[(bloque*16)+i];
+                }
+                return res;
+            } else {
+                //TODO RETURN DATA
+                return new int[4*4];
+            }
+        }
+
     };
     
     @Override
@@ -85,5 +95,19 @@ public class Memoria {
                 ", " + (memInst[124]) + ", " + (memInst[125]) + ", " + (memInst[126]) + ", " + (memInst[127]) + 
                 ", " + (memInst[128]) + ", " + (memInst[129]) + ", " + (memInst[130]) + ", " + (memInst[131]) +
                 ")";
+    }
+
+    /**
+     * @return the latenciaM
+     */
+    public int getLatenciaM() {
+        return latenciaM;
+    }
+
+    /**
+     * @param latenciaM the latenciaM to set
+     */
+    public void setLatenciaM(int latenciaM) {
+        this.latenciaM = latenciaM;
     }
 }

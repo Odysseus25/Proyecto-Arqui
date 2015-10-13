@@ -11,10 +11,31 @@ package clases;
  */
 public class Bus {
     Memoria mem;
-    public Bus(Memoria m){mem = m;};
+    int ocupador;
+    public Bus(Memoria m){
+        mem = m;
+        ocupador = -1;
+    };
     
-    public synchronized int[] getBloque(int bloque){
-        return mem.Read(bloque);
+    public synchronized int[] getBloque(int bloque, int nid){
+        if(ocupador == -1){
+            ocupador = nid;
+            int[] readblock = mem.Read(bloque);
+            if(readblock != null){
+                ocupador = -1;
+            }
+            return readblock;
+        }
+        else if(ocupador == nid){
+            int[] readblock = mem.Read(bloque);
+            if(readblock != null){
+                ocupador = -1;
+            }
+            return readblock;
+        }
+        else{
+            return null;
+        }
     };
     
     public synchronized void setBloque(int bloque, int res[]){

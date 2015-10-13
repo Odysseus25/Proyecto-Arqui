@@ -29,15 +29,32 @@ public class ProyectoArqui {
      * @throws java.lang.InterruptedException
      */
     public static void main(String[] args) throws InterruptedException {
+        //Se inicia programa, pedimos datos
+        System.out.println("Bienvenido, ésta es la simulación de la arquitectura MIPS realizada por: ");
+        System.out.println("Ulises González - B12989 \n "
+                                + " David Solano - B36738 \n");
+        System.out.println("¿Desea la simulación en modo lento o modo rápido? l / r");
+        Scanner in = new Scanner(System.in);  
+        String modo = in.nextLine();
+        boolean rapido;
+        if(modo.charAt(0) == 'r'||modo.charAt(0)== 'R'){
+           rapido = true;
+        }
+        else{
+            rapido = false;
+        }
+        System.out.println("Ingrese el valor del quantum: ");
+        int quantum = Integer.parseInt(in.nextLine());
+        
+        
         //Cargamos Memoria y colaEjecucion
         ConcurrentLinkedQueue<EstructuraHilo> colaEjecucion = new ConcurrentLinkedQueue<>();
         Memoria mem = cargaMemoria(colaEjecucion);
-        
         //Cargamos objetos de simulación
         Bus busInstrucciones = new Bus(mem);
         CyclicBarrier barrera = new CyclicBarrier(3);
-        Nucleo n1 = new Nucleo(1, 20, busInstrucciones, barrera);
-        Nucleo n2 = new Nucleo(2, 20, busInstrucciones, barrera);
+        Nucleo n1 = new Nucleo(1, quantum, busInstrucciones, barrera);
+        Nucleo n2 = new Nucleo(2, quantum, busInstrucciones, barrera);
         
         //Empezamos a simular!
         int reloj=0;
@@ -104,23 +121,26 @@ public class ProyectoArqui {
             } 
             
             //Si algún núcleo está terminado (no hay hilo que darle), no muestre su información
-            String n1Hid = (n1.isTerminado())?"Duerme":""+n1.getEstHilo().getHid();
-            String n2Hid = (n2.isTerminado())?"Duerme":""+n2.getEstHilo().getHid();
-            String n1Hpc = (n1.isTerminado())?"Duerme":""+n1.getEstHilo().getHpc();
-            String n2Hpc = (n2.isTerminado())?"Duerme":""+n2.getEstHilo().getHpc();
+            String n1Hid = (n1.isTerminado())?"No hay hilo para cargar al núcleo ":""+n1.getEstHilo().getHid();
+            String n2Hid = (n2.isTerminado())?"No hay hilo para cargar al núcleo":""+n2.getEstHilo().getHid();
+            String n1Hpc = (n1.isTerminado())?"No hay hilo para cargar al núcleo":""+n1.getEstHilo().getHpc();
+            String n2Hpc = (n2.isTerminado())?"No hay hilo para cargar al núcleo":""+n2.getEstHilo().getHpc();
             System.out.println("HID-N1: "+n1Hid+", HPC-N1: "+n1Hpc);
             System.out.println("HID-N2: "+n2Hid+", HPC-N2: "+n2Hpc);
         
             //Si algún núcleo está terminado (no hay hilo que darle), no muestre su información
-            String regN1=(n1.isTerminado())?"Duerme":""+n1;
-            String regN2=(n2.isTerminado())?"Duerme":""+n2;
+            String regN1=(n1.isTerminado())?"No hay hilo para cargar al núcleo":""+n1;
+            String regN2=(n2.isTerminado())?"No hay hilo para cargar al núcleo":""+n2;
             System.out.println("Nucleo 1: "+regN1+"\n"+"Nucleo 2: "+regN2);
             
             while(true) {//Ejecuto instrucción por instrucción
+               if(!rapido){
+                   in.nextLine();
+               }
                 n1.Execute();
                 n2.Execute();
                 try {//Espero a que se ejecuten las instrucciones de cada núcleo
-                    System.out.println("barrera wait, mtid: "+Thread.currentThread().getId());
+                   // System.out.println("barrera wait, mtid: "+Thread.currentThread().getId());
                     barrera.await();
                 } catch (BrokenBarrierException ex) {
                     System.err.println("MFT");
@@ -130,8 +150,13 @@ public class ProyectoArqui {
                 finN1=n1.isFin();
                 finN2=n2.isFin();
                 reloj++;
-                tiempo1++;
-                tiempo2++;
+                if(!n1.isEsperando()){
+                    tiempo1++;
+                }
+                if(!n2.isEsperando()){
+                    tiempo2++;
+                }
+                
                 if((tiempo1>=n1.getQuantum())&&!n1.isTerminado()) {//Si se acaba el quantum y no se ha terminado, guarde el hilo
                     System.out.println("SE ACABÓ EL QUANTUM DE N1");
                     n1.guardaHilo();
@@ -164,9 +189,14 @@ public class ProyectoArqui {
     
     //Carga la memoria pidiendo un directorio y leyendo cada archivo en ese directorio
     public static Memoria cargaMemoria(ConcurrentLinkedQueue<EstructuraHilo> colaEjecucion) {
-        Memoria mem = new Memoria(2);
-        System.out.println("Ingrese el directorio de hilos: ");
         Scanner in = new Scanner(System.in);
+        System.out.println("Ingrese la latencia del bus: ");
+        int latenciaB = Integer.parseInt(in.nextLine());
+        System.out.println("Ingrese la latencia de la memoria: ");
+        int latenciaM = Integer.parseInt(in.nextLine());
+        latenciaM += latenciaB;
+        Memoria mem = new Memoria(latenciaM);
+        System.out.println("Ingrese el directorio de hilos: ");
         String directorio = in.nextLine();
         File f = new File(directorio);
         

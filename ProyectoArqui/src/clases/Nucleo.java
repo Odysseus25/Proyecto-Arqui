@@ -24,6 +24,7 @@ public class Nucleo {
     int rl;
     CyclicBarrier barrera;
     private boolean terminado;
+    private boolean esperando;
     private  AtomicBoolean fin; 
     
     /**
@@ -42,6 +43,7 @@ public class Nucleo {
             r[i] = 0;
         }
         terminado=false;
+        esperando = false;
     };    
 
     /**
@@ -117,6 +119,20 @@ public class Nucleo {
     }
 
     /**
+     * @return the esperando
+     */
+    public boolean isEsperando() {
+        return esperando;
+    }
+
+    /**
+     * @param esperando the esperando to set
+     */
+    public void setEsperando(boolean esperando) {
+        this.esperando = esperando;
+    }
+
+    /**
      * Clase que implementa el estHilo para ejecutar las instrucciones paralelamente
      */
     public class HiloCPU extends Thread {
@@ -136,11 +152,25 @@ public class Nucleo {
         public void run() {
             //System.out.println("tid: "+this.getId());
             int[] instruccion = RequestInst();
+                int op;
+                int r1;
+                int r2;
+                int r3;
+                
+            if(instruccion == null){
+                op = -1;
+                r1 = -1;
+                r2 = -1;
+                r3 = -1;
+            }
+            else{
+                op = instruccion[0];
+                r1 = instruccion[1];
+                r2 = instruccion[2];
+                r3 = instruccion[3];
+            }
             
-            int op = instruccion[0];
-            int r1 = instruccion[1];
-            int r2 = instruccion[2];
-            int r3 = instruccion[3];
+
             //System.out.println(""+op+" "+r1+" "+r2+" "+r3);
             switch (op) {
                 case 8:     //DADDI, SUMA CON LITERAL
@@ -150,6 +180,7 @@ public class Nucleo {
                     System.out.println("N"+nid+": r"+r2+"="+r[r2]);
                     setFin(false);
                     guardaHilo();
+                    setEsperando(false);
                     break;
                 case 32:    //DADD, SUMA CON REGISTRO
                     System.out.println("N"+nid+": DADD r"+r1+" r"+r2+" ->r"+r3);
@@ -158,6 +189,7 @@ public class Nucleo {
                     System.out.println("N"+nid+": r"+r3+"="+r[r3]);
                     setFin(false);
                     guardaHilo();
+                    setEsperando(false);
                     break;
                 case 34:    //DSUB, RESTA
                     System.out.println("N"+nid+": DSUB r"+r1+" r"+r2+" ->r"+r3);
@@ -166,6 +198,7 @@ public class Nucleo {
                     System.out.println("N"+nid+": r"+r3+"="+r[r3]);
                     setFin(false);
                     guardaHilo();
+                    setEsperando(false);
                     break;
                 case 12:    //DMUL, MULTIPLICACION
                     System.out.println("N"+nid+": DMUL r"+r1+" r"+r2+" ->r"+r3);
@@ -174,6 +207,7 @@ public class Nucleo {
                     System.out.println("N"+nid+": r"+r3+"="+r[r3]);
                     setFin(false);
                     guardaHilo();
+                    setEsperando(false);
                     break;
                 case 14:    //DDIV, DIVISION
                     System.out.println("N"+nid+": DDIV r"+r1+" r"+r2+" ->r"+r3);
@@ -182,16 +216,19 @@ public class Nucleo {
                     System.out.println("N"+nid+": r"+r3+"="+r[r3]);
                     setFin(false);
                     guardaHilo();
+                    setEsperando(false);
                     break;
                 case 35:    //LW, LOAD
                     //TODO
                     setFin(false);
                     guardaHilo();
+                    setEsperando(false);
                     break;
                 case 43:    //SW, STORE
                     //TODO
                     setFin(false);
                     guardaHilo();
+                    setEsperando(false);
                     break;
                 case 4:     //BEQZ, SALTO CONDICIONAL IGUAL A CERO
                     System.out.println("N"+nid+": BEQZ r"+r1+" ->r"+r3);
@@ -202,6 +239,7 @@ public class Nucleo {
                     setFin(false);
                     System.out.println("N"+nid+": pc=" +pc);
                     guardaHilo();
+                    setEsperando(false);
                     break;
                 case 5:     //BNEZ, SALTO CONDICIONAL NO IGUAL
                     System.out.println("N"+nid+": BNEZ r"+r1+" ->r"+r3);
@@ -212,6 +250,7 @@ public class Nucleo {
                     setFin(false);
                     System.out.println("N"+nid+": pc=" +pc);
                     guardaHilo();
+                    setEsperando(false);
                     break;
                 case 3:     //JAL, SALTO A PARTIR DE DONDE VOY
                     System.out.println("N"+nid+": JAL r"+r3+" ->pc: "+pc);
@@ -221,32 +260,43 @@ public class Nucleo {
                     System.out.println("N"+nid+": pc="+pc);
                     setFin(false);
                     guardaHilo();
+                    setEsperando(false);
                     break;
                 case 2:     //JR, SALTO CON REGISTRO
                     pc += 4;
                     pc=r[r1];
                     setFin(false);
                     guardaHilo();
+                    setEsperando(false);
                     break;
                 case 11:    //LL, LOAD LINKED
                     //TODO
                     setFin(false);
                     guardaHilo();
+                    setEsperando(false);
                     break;
                 case 13:    //SC, STORE CONDITIONAL
                     //TODO
                     setFin(false);
                     guardaHilo();
+                    setEsperando(false);
                     break;
                 case 63:    //FIN, FIN
                     System.out.println("N"+nid+": FIN t");
                     setFin(true);
                     guardaHilo();
+                    setEsperando(false);
+                    break;
+                case -1:
+                    System.out.println("N" + nid + ": Esperando latencia");
+                    setFin(false);
+                    setEsperando(true);
                     break;
                 default:
                     System.err.println("N"+nid+": INSTRUCCION INVALIDA");
                     setFin(true);
                     guardaHilo();
+                    setEsperando(false);
                     break;
             }
             
@@ -284,7 +334,7 @@ public class Nucleo {
                     System.out.println("N"+nid+": NOP");
                     setFin(false);
                     try {
-                        System.out.println("barrera wait, tid: "+Thread.currentThread().getId());
+                        //System.out.println("barrera wait, tid: "+Thread.currentThread().getId());
                         barrera.await();
                     } catch (InterruptedException | BrokenBarrierException ex) {
                         Logger.getLogger(Nucleo.class.getName()).log(Level.SEVERE, null, ex);
@@ -300,7 +350,7 @@ public class Nucleo {
     public int[] RequestInst(){
         int block = pc/16;                          //busco el bloque en el que está la dirección
         int word = pc/4;                            //# de palabra dentro del bloque
-        return ci.getInstruccion(block, word%4);    //pide a la cache la instrucción
+        return ci.getInstruccion(block, word%4, nid);    //pide a la cache la instrucción
     };
     
     public void Write(int dir, int[] bloque){};

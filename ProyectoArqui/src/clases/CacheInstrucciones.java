@@ -22,13 +22,18 @@ public class CacheInstrucciones {
             cache[16][j]=-1;
         }
     };
-    public int[] getInstruccion(int block, int word){
+    public int[] getInstruccion(int block, int word, int nid){
         //System.out.println("bloque de inst: "+block);
         if(verificarBloque(block)) {
             return findWord(block, word);
         } else {
-            traeBloque(block);
-            return findWord(block, word);
+            traeBloque(block, nid);
+            if(cache[16][block%8] == -2){
+                return null;
+            }
+            else{
+                return findWord(block, word);
+            }
         }
     };
     public boolean verificarBloque(int block){
@@ -44,14 +49,19 @@ public class CacheInstrucciones {
         return word;
     };
     
-    public void traeBloque(int block){
+    public void traeBloque(int block, int nid){
         //System.out.println("traje bloque");
         int[] bloque;
-        bloque = bus.getBloque(block);
-        for(int i=0; i<bloque.length; i++) {
-            cache[i][block%8] = bloque[i];
+        bloque = bus.getBloque(block, nid);
+        if(bloque == null){
+                        cache[16][block%8] = -2;
         }
-        cache[16][block%8] = block;
+        else{
+            for(int i=0; i<bloque.length; i++) {
+                cache[i][block%8] = bloque[i];
+            }
+            cache[16][block%8] = block;
+        }
     };
     Bus bus; 
 }
