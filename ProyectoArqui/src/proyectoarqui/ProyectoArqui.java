@@ -125,13 +125,13 @@ public class ProyectoArqui {
             String n2Hid = (n2.isTerminado())?"No hay hilo para cargar al núcleo":""+n2.getEstHilo().getHid();
             String n1Hpc = (n1.isTerminado())?"No hay hilo para cargar al núcleo":""+n1.getEstHilo().getHpc();
             String n2Hpc = (n2.isTerminado())?"No hay hilo para cargar al núcleo":""+n2.getEstHilo().getHpc();
-            System.out.println("HID-N1: "+n1Hid+", HPC-N1: "+n1Hpc);
-            System.out.println("HID-N2: "+n2Hid+", HPC-N2: "+n2Hpc);
-        
+            System.out.println("ID del hilo ejecutándose en el núcleo 1: "+n1Hid+", PC del núcleo 1: "+n1Hpc);
+            System.out.println("ID del hilo ejecutándose en el núcleo 2: "+n2Hid+", PC del núcleo 2: "+n2Hpc);
+    
             //Si algún núcleo está terminado (no hay hilo que darle), no muestre su información
-            String regN1=(n1.isTerminado())?"No hay hilo para cargar al núcleo":""+n1;
+           /* String regN1=(n1.isTerminado())?"No hay hilo para cargar al núcleo":""+n1;
             String regN2=(n2.isTerminado())?"No hay hilo para cargar al núcleo":""+n2;
-            System.out.println("Nucleo 1: "+regN1+"\n"+"Nucleo 2: "+regN2);
+            System.out.println("Nucleo 1: "+regN1+"\n"+"Nucleo 2: "+regN2);*/
             
             while(true) {//Ejecuto instrucción por instrucción
                if(!rapido){
@@ -158,13 +158,13 @@ public class ProyectoArqui {
                 }
                 
                 if((tiempo1>=n1.getQuantum())&&!n1.isTerminado()) {//Si se acaba el quantum y no se ha terminado, guarde el hilo
-                    System.out.println("SE ACABÓ EL QUANTUM DE N1");
+                   // System.out.println("SE ACABÓ EL QUANTUM DE N1");
                     n1.guardaHilo();
                     colaEjecucion.add(n1.getEstHilo());
                     finN1=true;
                 } 
                 if(tiempo2>=n2.getQuantum()&&!n2.isTerminado()) {//Si se acaba el quantum y no se ha terminado, guarde el hilo
-                    System.out.println("SE ACABÓ EL QUANTUM DE N2");
+                    //System.out.println("SE ACABÓ EL QUANTUM DE N2");
                     n2.guardaHilo();
                     colaEjecucion.add(n2.getEstHilo());
                     finN2=true;
@@ -177,10 +177,10 @@ public class ProyectoArqui {
             finN1=n1.isFin()||(tiempo1>=n1.getQuantum())||n1.isTerminado();
             finN2=n2.isFin()||(tiempo2>=n2.getQuantum())||n2.isTerminado();
             //Si algún núcleo está terminado (no hay hilo que darle), no muestre su información
-            regN1=(n1.isTerminado())?"Duerme":""+n1;
+            /*regN1=(n1.isTerminado())?"Duerme":""+n1;
             regN2=(n2.isTerminado())?"Duerme":""+n2;
             //Imprimo resultados de vuelta
-            System.out.println("Nucleo 1: "+regN1+"\n"+"Nucleo 2: "+regN2);
+            System.out.println("Nucleo 1: "+regN1+"\n"+"Nucleo 2: "+regN2);*/
             System.out.println("________________________________");
         }
         
@@ -229,8 +229,8 @@ public class ProyectoArqui {
         }
         
         
-        System.out.println(mem);
-        System.out.println("largo de la cola: " + colaEjecucion.size());
+       // System.out.println(mem);
+       // System.out.println("largo de la cola: " + colaEjecucion.size());
         return mem;
     }
     

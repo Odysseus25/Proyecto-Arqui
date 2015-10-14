@@ -174,46 +174,46 @@ public class Nucleo {
             //System.out.println(""+op+" "+r1+" "+r2+" "+r3);
             switch (op) {
                 case 8:     //DADDI, SUMA CON LITERAL
-                    System.out.println("N"+nid+": DADDI r"+r1+" #"+r3+" ->r"+r2);
+                    //System.out.println("N"+nid+": DADDI r"+r1+" #"+r3+" ->r"+r2);
                     pc += 4;
                     r[r2]=r[r1]+r3;
-                    System.out.println("N"+nid+": r"+r2+"="+r[r2]);
+                    //System.out.println("N"+nid+": r"+r2+"="+r[r2]);
                     setFin(false);
                     guardaHilo();
                     setEsperando(false);
                     break;
                 case 32:    //DADD, SUMA CON REGISTRO
-                    System.out.println("N"+nid+": DADD r"+r1+" r"+r2+" ->r"+r3);
+                   // System.out.println("N"+nid+": DADD r"+r1+" r"+r2+" ->r"+r3);
                     pc += 4;
                     r[r3]=r[r1]+r[r2];
-                    System.out.println("N"+nid+": r"+r3+"="+r[r3]);
+                   // System.out.println("N"+nid+": r"+r3+"="+r[r3]);
                     setFin(false);
                     guardaHilo();
                     setEsperando(false);
                     break;
                 case 34:    //DSUB, RESTA
-                    System.out.println("N"+nid+": DSUB r"+r1+" r"+r2+" ->r"+r3);
+                   // System.out.println("N"+nid+": DSUB r"+r1+" r"+r2+" ->r"+r3);
                     pc += 4;
                     r[r3]=r[r1]-r[r2];
-                    System.out.println("N"+nid+": r"+r3+"="+r[r3]);
+                   // System.out.println("N"+nid+": r"+r3+"="+r[r3]);
                     setFin(false);
                     guardaHilo();
                     setEsperando(false);
                     break;
                 case 12:    //DMUL, MULTIPLICACION
-                    System.out.println("N"+nid+": DMUL r"+r1+" r"+r2+" ->r"+r3);
+                   // System.out.println("N"+nid+": DMUL r"+r1+" r"+r2+" ->r"+r3);
                     pc += 4;
                     r[r3]=r[r1]*r[r2];
-                    System.out.println("N"+nid+": r"+r3+"="+r[r3]);
+                    //System.out.println("N"+nid+": r"+r3+"="+r[r3]);
                     setFin(false);
                     guardaHilo();
                     setEsperando(false);
                     break;
                 case 14:    //DDIV, DIVISION
-                    System.out.println("N"+nid+": DDIV r"+r1+" r"+r2+" ->r"+r3);
+                    //System.out.println("N"+nid+": DDIV r"+r1+" r"+r2+" ->r"+r3);
                     pc += 4;
                     r[r3]=r[r1]/r[r2];
-                    System.out.println("N"+nid+": r"+r3+"="+r[r3]);
+                   // System.out.println("N"+nid+": r"+r3+"="+r[r3]);
                     setFin(false);
                     guardaHilo();
                     setEsperando(false);
@@ -231,33 +231,33 @@ public class Nucleo {
                     setEsperando(false);
                     break;
                 case 4:     //BEQZ, SALTO CONDICIONAL IGUAL A CERO
-                    System.out.println("N"+nid+": BEQZ r"+r1+" ->r"+r3);
+                    //System.out.println("N"+nid+": BEQZ r"+r1+" ->r"+r3);
                     pc += 4;
                     if(r[r1]==0) {
                         pc += (r3*4);
                     }
                     setFin(false);
-                    System.out.println("N"+nid+": pc=" +pc);
+                   // System.out.println("N"+nid+": pc=" +pc);
                     guardaHilo();
                     setEsperando(false);
                     break;
                 case 5:     //BNEZ, SALTO CONDICIONAL NO IGUAL
-                    System.out.println("N"+nid+": BNEZ r"+r1+" ->r"+r3);
+                    //System.out.println("N"+nid+": BNEZ r"+r1+" ->r"+r3);
                     pc += 4;
                     if(r[r1]!=0) {
                         pc += (r3*4);
                     }
                     setFin(false);
-                    System.out.println("N"+nid+": pc=" +pc);
+                   // System.out.println("N"+nid+": pc=" +pc);
                     guardaHilo();
                     setEsperando(false);
                     break;
                 case 3:     //JAL, SALTO A PARTIR DE DONDE VOY
-                    System.out.println("N"+nid+": JAL r"+r3+" ->pc: "+pc);
+                    //System.out.println("N"+nid+": JAL r"+r3+" ->pc: "+pc);
                     pc += 4;
                     r[31]=pc;
                     pc+=(r3);
-                    System.out.println("N"+nid+": pc="+pc);
+                    //System.out.println("N"+nid+": pc="+pc);
                     setFin(false);
                     guardaHilo();
                     setEsperando(false);
@@ -282,18 +282,18 @@ public class Nucleo {
                     setEsperando(false);
                     break;
                 case 63:    //FIN, FIN
-                    System.out.println("N"+nid+": FIN t");
+                   // System.out.println("N"+nid+": FIN t");
                     setFin(true);
                     guardaHilo();
                     setEsperando(false);
                     break;
                 case -1:
-                    System.out.println("N" + nid + ": Esperando latencia");
+                   // System.out.println("N" + nid + ": Esperando latencia");
                     setFin(false);
                     setEsperando(true);
                     break;
                 default:
-                    System.err.println("N"+nid+": INSTRUCCION INVALIDA");
+                  //  System.err.println("N"+nid+": INSTRUCCION INVALIDA");
                     setFin(true);
                     guardaHilo();
                     setEsperando(false);
@@ -302,7 +302,7 @@ public class Nucleo {
             
             
             try {//Espero en la barrera para poder sincronizar el reloj.
-                System.out.println("barrera wait, tid: "+Thread.currentThread().getId());
+               // System.out.println("barrera wait, tid: "+Thread.currentThread().getId());
                 barrera.await();
             } catch (InterruptedException | BrokenBarrierException ex) {
                 Logger.getLogger(Nucleo.class.getName()).log(Level.SEVERE, null, ex);
@@ -331,7 +331,7 @@ public class Nucleo {
             nop = new Thread() {
                 @Override
                 public void run() {
-                    System.out.println("N"+nid+": NOP");
+                   // System.out.println("N"+nid+": NOP");
                     setFin(false);
                     try {
                         //System.out.println("barrera wait, tid: "+Thread.currentThread().getId());
