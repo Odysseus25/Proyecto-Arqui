@@ -78,12 +78,12 @@ public class EstructuraHilo {
     }
     @Override
     public String toString(){
-        String registros = "reg(";
+        String registros = "[";
         for(int i=0; i<reg.length-1; i++) {
-            registros += i+":" +reg[i]+", ";
+            registros += "r"+i+":" +reg[i]+", ";
         }
-        registros += reg[reg.length-1];
-        registros += ")";
+        registros += "r"+(reg.length-1)+":"+reg[reg.length-1];
+        registros += "]";
         return registros;
     }
 }    
