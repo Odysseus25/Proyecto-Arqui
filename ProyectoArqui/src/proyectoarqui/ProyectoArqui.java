@@ -29,6 +29,7 @@ public class ProyectoArqui {
      * @throws java.lang.InterruptedException
      */
     public static void main(String[] args) throws InterruptedException {
+        String div = "_______________________________________________________________________________";
         //Se inicia programa, pedimos datos
         System.out.println("Bienvenido, ésta es la simulación de la arquitectura MIPS realizada por: ");
         System.out.println("Ulises González - B12989 \n "
@@ -61,8 +62,15 @@ public class ProyectoArqui {
         //Booleanos que determinan si N1 y N2 están ejecutando algo
         boolean finN1=false;
         boolean finN2=false;
+        //Vectores para ir guardando información que se debe desplegar al final de la simulación
+        int[] ciclosPorHilo = new int[colaEjecucion.size()];
+        for(int i=0; i<ciclosPorHilo.length; i++) {
+            ciclosPorHilo[i] = 0;
+        }
+        EstructuraHilo[] finHilos = new EstructuraHilo[colaEjecucion.size()];
         //Cargamos los hilos iniciales en N1 y N2
         if(!colaEjecucion.isEmpty()) {
+            System.out.println("Cargamos hilo de cola en núcleo 1...");
             EstructuraHilo t1 = colaEjecucion.poll();
             n1.setEstHilo(t1);
             n1.setTerminado(false);
@@ -70,6 +78,7 @@ public class ProyectoArqui {
             n1.setTerminado(true);
         }
         if(!colaEjecucion.isEmpty()) {
+            System.out.println("Cargamos hilo de cola en núcleo 2...");
             EstructuraHilo t2 = colaEjecucion.poll();
             n2.setEstHilo(t2);
             n2.setTerminado(false);
@@ -81,10 +90,11 @@ public class ProyectoArqui {
         int tiempo2=0;
         //Si la cola no está vacía o aún se está ejecutando algún hilo, continúe ejecutando
         while(!colaEjecucion.isEmpty()||!(finN1&&finN2)) {
-            System.out.println("Reloj: "+reloj);
             
+            System.out.println(div);
             if(finN1&&finN2) {//Si ambos núcleos terminaron, carguemos hilos en cada uno (de ser posible)
                 if(!colaEjecucion.isEmpty()) {
+                    System.out.println("Cargamos hilo de cola en núcleo 1...");
                     EstructuraHilo t1 = colaEjecucion.poll();
                     n1.setEstHilo(t1);
                     n1.setTerminado(false);
@@ -92,6 +102,7 @@ public class ProyectoArqui {
                     n1.setTerminado(true);
                 }
                 if(!colaEjecucion.isEmpty()) {
+                    System.out.println("Cargamos hilo de cola en núcleo 2...");
                     EstructuraHilo t2 = colaEjecucion.poll();
                     n2.setEstHilo(t2);
                     n2.setTerminado(false);
@@ -102,6 +113,7 @@ public class ProyectoArqui {
                 tiempo2=0;
             } else if(finN1) {//Si solo N1 terminó, cargue solo N1
                 if(!colaEjecucion.isEmpty()) {
+                    System.out.println("Cargamos hilo de cola en núcleo 1...");
                     EstructuraHilo t1 = colaEjecucion.poll();
                     n1.setEstHilo(t1);
                     n1.setTerminado(false);
@@ -111,6 +123,7 @@ public class ProyectoArqui {
                 tiempo1=0;
             } else if(finN2) {//Si solo N2 terminó, cargue solo N2
                 if(!colaEjecucion.isEmpty()) {
+                    System.out.println("Cargamos hilo de cola en núcleo 2...");
                     EstructuraHilo t2 = colaEjecucion.poll();
                     n2.setEstHilo(t2);
                     n2.setTerminado(false);
@@ -121,22 +134,22 @@ public class ProyectoArqui {
             } 
             
             //Si algún núcleo está terminado (no hay hilo que darle), no muestre su información
-            String n1Hid = (n1.isTerminado())?"No hay hilo para cargar al núcleo ":""+n1.getEstHilo().getHid();
-            String n2Hid = (n2.isTerminado())?"No hay hilo para cargar al núcleo":""+n2.getEstHilo().getHid();
-            String n1Hpc = (n1.isTerminado())?"No hay hilo para cargar al núcleo":""+n1.getEstHilo().getHpc();
-            String n2Hpc = (n2.isTerminado())?"No hay hilo para cargar al núcleo":""+n2.getEstHilo().getHpc();
-            System.out.println("ID del hilo ejecutándose en el núcleo 1: "+n1Hid+", PC del núcleo 1: "+n1Hpc);
-            System.out.println("ID del hilo ejecutándose en el núcleo 2: "+n2Hid+", PC del núcleo 2: "+n2Hpc);
-    
-            //Si algún núcleo está terminado (no hay hilo que darle), no muestre su información
            /* String regN1=(n1.isTerminado())?"No hay hilo para cargar al núcleo":""+n1;
             String regN2=(n2.isTerminado())?"No hay hilo para cargar al núcleo":""+n2;
             System.out.println("Nucleo 1: "+regN1+"\n"+"Nucleo 2: "+regN2);*/
             
             while(true) {//Ejecuto instrucción por instrucción
-               if(!rapido){
-                   in.nextLine();
-               }
+                System.out.println("Reloj: "+reloj);
+                //Si algún núcleo está terminado (no hay hilo que darle), no muestre su información
+                String n1Hid = (n1.isTerminado())?"No hay hilo para cargar al núcleo":""+n1.getEstHilo().getHid();
+                String n2Hid = (n2.isTerminado())?"No hay hilo para cargar al núcleo":""+n2.getEstHilo().getHid();
+                String n1Hpc = (n1.isTerminado())?"No hay hilo para cargar al núcleo":""+n1.getEstHilo().getHpc();
+                String n2Hpc = (n2.isTerminado())?"No hay hilo para cargar al núcleo":""+n2.getEstHilo().getHpc();
+                System.out.println("->ID del hilo ejecutándose en el núcleo 1: ["+n1Hid+"], PC del núcleo 1: ["+n1Hpc+"]");
+                System.out.println("->ID del hilo ejecutándose en el núcleo 2: ["+n2Hid+"], PC del núcleo 2: ["+n2Hpc+"]");
+                if(!rapido){
+                    in.nextLine();
+                }
                 n1.Execute();
                 n2.Execute();
                 try {//Espero a que se ejecuten las instrucciones de cada núcleo
@@ -149,7 +162,17 @@ public class ProyectoArqui {
                 
                 finN1=n1.isFin();
                 finN2=n2.isFin();
+                if(finN1) {
+                    finHilos[n1.getEstHilo().getHid()] = n1.getEstHilo();
+                    System.out.println("FIN de hilo #"+n1.getEstHilo().getHid());
+                }
+                if(finN2) {
+                    finHilos[n2.getEstHilo().getHid()] = n2.getEstHilo();
+                    System.out.println("FIN de hilo #"+n2.getEstHilo().getHid());
+                }
                 reloj++;
+                ciclosPorHilo[n1.getEstHilo().getHid()]++;
+                ciclosPorHilo[n2.getEstHilo().getHid()]++;
                 if(!n1.isEsperando()){
                     tiempo1++;
                 }
@@ -158,13 +181,13 @@ public class ProyectoArqui {
                 }
                 
                 if((tiempo1>=n1.getQuantum())&&!n1.isTerminado()) {//Si se acaba el quantum y no se ha terminado, guarde el hilo
-                   // System.out.println("SE ACABÓ EL QUANTUM DE N1");
+                    System.out.println("Se acabó el quantum de N1");
                     n1.guardaHilo();
                     colaEjecucion.add(n1.getEstHilo());
                     finN1=true;
                 } 
                 if(tiempo2>=n2.getQuantum()&&!n2.isTerminado()) {//Si se acaba el quantum y no se ha terminado, guarde el hilo
-                    //System.out.println("SE ACABÓ EL QUANTUM DE N2");
+                    System.out.println("Se acabó el quantum de N2");
                     n2.guardaHilo();
                     colaEjecucion.add(n2.getEstHilo());
                     finN2=true;
@@ -181,9 +204,16 @@ public class ProyectoArqui {
             regN2=(n2.isTerminado())?"Duerme":""+n2;
             //Imprimo resultados de vuelta
             System.out.println("Nucleo 1: "+regN1+"\n"+"Nucleo 2: "+regN2);*/
-            System.out.println("________________________________");
+            
         }
-        
+        System.out.println(div);
+        System.out.println(div);
+        System.out.println("RESULTADOS:");
+        for(int i=0; i<finHilos.length; i++) {
+            System.out.println("---->Hilo #"+i+":");
+            System.out.println("-->Ciclos de reloj ocupados: "+ciclosPorHilo[i]);
+            System.out.println("-->Registros Finales: "+finHilos[i]);
+        }
         
     }
     
