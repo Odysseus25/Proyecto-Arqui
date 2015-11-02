@@ -225,7 +225,7 @@ public class ProyectoArqui {
         System.out.println("Ingrese la latencia de la memoria: ");
         int latenciaM = Integer.parseInt(in.nextLine());
         latenciaM += latenciaB;
-        Memoria mem = new Memoria(latenciaM);
+        Memoria mem = new Memoria(latenciaM*4);
         System.out.println("Ingrese el directorio de hilos: ");
         String directorio = in.nextLine();
         File f = new File(directorio);
