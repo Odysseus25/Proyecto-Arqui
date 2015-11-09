@@ -12,9 +12,15 @@ package clases;
 public class Bus {
     Memoria mem;
     int ocupador;
+    String mensaje;
+    CacheDatos[] cachesD = new CacheDatos[2];
     public Bus(Memoria m){
         mem = m;
         ocupador = -1;
+    };
+    
+    public void setCache(CacheDatos cd, int nid) {
+        cachesD[nid-1] = cd;
     };
     
     public synchronized int[] getBloque(int bloque, int nid){
@@ -38,7 +44,12 @@ public class Bus {
         }
     };
     
-    public synchronized void setBloque(int bloque, int res[]){
-        //TODO
+    public synchronized boolean setBloque(int bloque, int res[]){
+        return false;
+        //TODO: 
+    };
+    
+    public synchronized boolean invalidar(int block, int nid) {
+        return cachesD[nid-1].invalidar(block);
     };
 }

@@ -5,14 +5,19 @@
  */
 package clases;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 /**
  *
  * @author dave
  */
 public class CacheDatos {
+    Bus bus; 
     int cache[][] = new int[(4*4)][8];
     int etiqueta[] = new int[8];
-    int validez[] = new int[8];
+    char validez[] = new char[8];
+    private AtomicBoolean ocupado = new AtomicBoolean(false);
+    
     public CacheDatos(Bus b){
         bus = b;
         for(int i=0; i<cache.length-1; i++) {
@@ -22,52 +27,90 @@ public class CacheDatos {
         }
         //-1=invalido, 0=compartido, 1=modificado
         for(int j=0; j<etiqueta.length; j++) {
-            validez[j]=-1;
+            validez[j]='I';
         }
-    };
-    public int[] getWord(int block, int word, int nid){
-        //System.out.println("bloque de inst: "+block);
-        /*if(verificarBloque(block)) {
-            return findWord(block, word);
-        } else {
-            traeBloque(block, nid);
-            if(cache[16][block%8] == -2){
-                return null;
-            }
-            else{
-                return findWord(block, word);
-            }
-        }*/
-        return null;
     };
     
-    public void setWord(int block, int word, int nid){
-        //System.out.println("bloque de inst: "+block);
-        /*if(verificarBloque(block)) {
-            //return findWord(block, word);
+    public int[] getWord(int block, int word, int nid){
+        if(!ocupado.get()) {
+            switch (verificarBloque(block)) {
+                case 'C': //Bloque compartido
+                    return findWord(block, word);
+                case 'M': //Bloque modificado
+                    return findWord(block, word);
+                case 'I': //Bloque inválido
+                    traeBloque(block, nid);
+                    if(validez[block%8]=='C') {
+                        return findWord(block, word);
+                    } else {
+                        return null;
+                    }
+                case 'R': //Bloque modificado, pero no es el que necesito
+                    //TODO: guardar bloque (Note que puede devolver falso aquí)
+                    traeBloque(block, nid);
+                    if(validez[block%8]=='C') {
+                        return findWord(block, word);
+                    } else {
+                        return null;
+                    }
+                default:
+                    return null;
+            }
         } else {
-            traeBloque(block, nid);
-            if(cache[16][block%8] == -2){
-                //return null;
-            }
-            else{
-                //return findWord(block, word);
-            }
-        }*/
-    };
-    public int verificarBloque(int block){
-        if(validez[block%8]==0) {
-            if(etiqueta[block%8]==block) {
-                return 0;
-            }
-        } else if(validez[block%8]==1) {
-            if(etiqueta[block%8]==block) {
-                return 1;
-            }
-        } else {
-            return -1;
+            return null;
         }
-        return -1;
+    };
+    
+    public boolean setWord(int block, int word, int nid){
+        if(!ocupado.get()) {
+            switch (verificarBloque(block)) {
+                case 'C': //Bloque compartido
+                    //TODO: Invalido y modifico (Note que puede devolver falso si debe esperar para invalidar) 
+                    return true;
+                case 'M': //Bloque modificado
+                    //TODO: Modifico
+                    return true;
+                case 'I': //Bloque inválido
+                    traeBloque(block, nid);
+                    if(validez[block%8]=='C') {
+                        //TODO: Modifico
+                        return true;
+                    } else {
+                        return false;
+                    }
+                case 'R': //Bloque modificado, pero no es el que necesito
+                    //TODO: guardar bloque (Note que puede devolver falso aquí)
+                    traeBloque(block, nid);
+                    if(validez[block%8]=='C') {
+                        //TODO: Invalido y modifico (Note que puede devolver falso si debe esperar para invalidar)
+                        return true;
+                    } else {
+                        return false;
+                    }
+                default:
+                    return false;
+            } 
+        } else {
+            return false;
+        }
+    };
+    
+    public int verificarBloque(int block){
+        if(validez[block%8]=='C') {
+            if(etiqueta[block%8]==block) {
+                return 'C';
+            }
+        } else if(validez[block%8]=='M') {
+            if(etiqueta[block%8]==block) {
+                return 'M';
+            } else {
+                //TODO: escribir bloque modificado a memoria
+                return 'R';
+            }
+        } else {
+            return 'I';
+        }
+        return 'I';
         
     };
     
@@ -84,14 +127,44 @@ public class CacheDatos {
         int[] bloque;
         bloque = bus.getBloque(block, nid);
         if(bloque == null){
-                        cache[16][block%8] = -2;
-        }
-        else{
+            validez[block%8] = 'I';
+        } else {
             for(int i=0; i<bloque.length; i++) {
                 cache[i][block%8] = bloque[i];
             }
-            cache[16][block%8] = block;
+            validez[block%8] = 'C';
+            etiqueta[block%8] = block;
         }
     };
-    Bus bus; 
+
+    /**
+     * @return the ocupado
+     */
+    public boolean getOcupado() {
+        return this.ocupado.get();
+    }
+
+
+    public void libera() {
+        this.ocupado.set(false);
+    }
+    
+
+    public void ocupa() {
+        this.ocupado.set(true);
+    }
+    
+    public boolean invalidar(int block) {
+        if(!getOcupado()) {
+            for(int i = 0; i<this.validez.length; i++) {
+                if(this.etiqueta[i]==block) {
+                    this.validez[i] = 'I';
+                }
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
 }

@@ -220,6 +220,7 @@ public class Nucleo {
                     break;
                 case 35:    //LW, LOAD
                     //TODO
+                    //CacheDatos.getWord()
                     setFin(false);
                     guardaHilo();
                     setEsperando(false);
