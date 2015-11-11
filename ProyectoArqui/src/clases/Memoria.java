@@ -35,24 +35,39 @@ public class Memoria {
         }
         return true;
     }
-    public void Write(int bloque, int res[]){};
-    public int[] Read(int bloque){
-        //TODO: latencia
-        if(tiempoLatencia < latenciaM){
+    
+    public boolean Write(int bloque, int res[], boolean espere){
+        if((tiempoLatencia < latenciaM) && espere){
+            tiempoLatencia++;
+            return false;
+        }
+        else{
+            tiempoLatencia = 0;
+            if(bloque < 160) {
+                return false;
+            } else {
+                System.arraycopy(res, 0, memData, bloque*16-(memInst.length), res.length);
+                return true;
+            }
+        }
+    };
+    
+    public int[] Read(int bloque, boolean espere){
+        if((tiempoLatencia < latenciaM) && espere){
             tiempoLatencia++;
             return null;
         }
         else{
             tiempoLatencia = 0;
+            int[] res = new int[4*4];
             if(bloque < 160) {
-                int[] res = new int[4*4];
                 for(int i=0; i<16; i++) {
                     res[i] = memInst[(bloque*16)+i];
                 }
                 return res;
             } else {
-                //TODO RETURN DATA
-                return new int[4*4];
+                System.arraycopy(memData, bloque*16-(memInst.length), res, 0, res.length);
+                return res;
             }
         }
 

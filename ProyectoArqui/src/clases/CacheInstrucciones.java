@@ -52,7 +52,7 @@ public class CacheInstrucciones {
     public void traeBloque(int block, int nid){
         //System.out.println("traje bloque");
         int[] bloque;
-        bloque = bus.getBloque(block, nid);
+        bloque = bus.getBloqueInstr(block, nid);
         if(bloque == null){
                         cache[16][block%8] = -2;
         }

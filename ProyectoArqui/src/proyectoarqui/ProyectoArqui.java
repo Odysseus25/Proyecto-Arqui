@@ -53,9 +53,12 @@ public class ProyectoArqui {
         Memoria mem = cargaMemoria(colaEjecucion);
         //Cargamos objetos de simulación
         Bus busInstrucciones = new Bus(mem);
+        Bus busDatos = new Bus(mem);
         CyclicBarrier barrera = new CyclicBarrier(3);
-        Nucleo n1 = new Nucleo(1, quantum, busInstrucciones, barrera);
-        Nucleo n2 = new Nucleo(2, quantum, busInstrucciones, barrera);
+        Nucleo n1 = new Nucleo(1, quantum, busInstrucciones, busDatos, barrera);
+        Nucleo n2 = new Nucleo(2, quantum, busInstrucciones, busDatos, barrera);
+        busDatos.setCache(n1.getCD(), n1.getNid());
+        busDatos.setCache(n2.getCD(), n2.getNid());
         
         //Empezamos a simular!
         int reloj=0;

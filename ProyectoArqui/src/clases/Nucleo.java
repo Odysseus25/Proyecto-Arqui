@@ -16,9 +16,10 @@ import java.util.logging.Logger;
  */
 public class Nucleo {
     private double quantum;
-    int nid;
+    private int nid;
     private EstructuraHilo estHilo;
     CacheInstrucciones ci;
+    private CacheDatos cd;
     int r[] = new int[32];
     int pc;
     int rl;
@@ -31,13 +32,15 @@ public class Nucleo {
      * Constructor
      * @param id
      * @param quantum
-     * @param bus
+     * @param busInst
+     * @param busData
      * @param barrera 
      */
-    public Nucleo(int id, double quantum, Bus bus, CyclicBarrier barrera){ // recibe el bus compartido que tiene la memoria compartida
+    public Nucleo(int id, double quantum, Bus busInst, Bus busData, CyclicBarrier barrera){ // recibe el bus compartido que tiene la memoria compartida
         nid = id;
         this.quantum = quantum;
-        ci = new CacheInstrucciones(bus);
+        ci = new CacheInstrucciones(busInst);
+        cd = new CacheDatos(busData);
         this.barrera = barrera;
         for(int i=0; i<32; i++) {
             r[i] = 0;
@@ -133,6 +136,34 @@ public class Nucleo {
     }
 
     /**
+     * @return the cd
+     */
+    public CacheDatos getCD() {
+        return cd;
+    }
+
+    /**
+     * @param cd the cd to set
+     */
+    public void setCD(CacheDatos cd) {
+        this.cd = cd;
+    }
+
+    /**
+     * @return the nid
+     */
+    public int getNid() {
+        return nid;
+    }
+
+    /**
+     * @param nid the nid to set
+     */
+    public void setNid(int nid) {
+        this.nid = nid;
+    }
+
+    /**
      * Clase que implementa el estHilo para ejecutar las instrucciones paralelamente
      */
     public class HiloCPU extends Thread {
@@ -218,15 +249,16 @@ public class Nucleo {
                     guardaHilo();
                     setEsperando(false);
                     break;
-                case 35:    //LW, LOAD
-                    //TODO
+                case 35:    //LW, LOAD r2<-M(r1+r3)
+                    //TODO: 
                     //CacheDatos.getWord()
                     setFin(false);
                     guardaHilo();
                     setEsperando(false);
                     break;
-                case 43:    //SW, STORE
-                    //TODO
+                case 43:    //SW, STORE M(r1+r3)<-r2
+                    //TODO:
+                    //CacheDatos.setWord()
                     setFin(false);
                     guardaHilo();
                     setEsperando(false);
@@ -351,7 +383,7 @@ public class Nucleo {
     public int[] RequestInst(){
         int block = pc/16;                          //busco el bloque en el que está la dirección
         int word = pc/4;                            //# de palabra dentro del bloque
-        return ci.getInstruccion(block, word%4, nid);    //pide a la cache la instrucción
+        return ci.getInstruccion(block, word%4, getNid());    //pide a la cache la instrucción
     };
     
     public void Write(int dir, int[] bloque){};
