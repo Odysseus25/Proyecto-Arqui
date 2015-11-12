@@ -20,9 +20,9 @@ public class CacheDatos {
     
     public CacheDatos(Bus b){
         bus = b;
-        for(int i=0; i<cache.length-1; i++) {
+        for(int i=0; i<cache.length; i++) {
             for(int j=0; j<cache[i].length; j++) {
-                cache[i][j]=0;
+                cache[i][j]=1;
             }
         }
         //'I'=invalido, 'C'=compartido, 'M'=modificado, 'R'=modificado, pero no es el necesitado
@@ -32,7 +32,10 @@ public class CacheDatos {
     };
     
     //TODO: Liberar recursos si devuelve null;
-    public int[] getWord(int block, int nword, int nid){
+    public int[] getWord(int address, int nid){
+        
+        int nword = (address/4)%4;
+        int block = address/16;
         if(getOcupador()==-1 || getOcupador()==nid) {
             ocupa(nid);
             switch (verificarBloque(block)) {
@@ -49,6 +52,7 @@ public class CacheDatos {
                         return findWord(block, nword);
                     } else {
                         //TODO: verificar deadlock
+                        libera();
                         return null;
                     }
                 case 'R': //Bloque modificado, pero no es el que necesito
@@ -68,11 +72,15 @@ public class CacheDatos {
                     return null;
             }
         } else {
+            System.out.println(getOcupador());
             return null;
         }
     };
     
-    public boolean setWord(int block, int nword, int[] word, int nid){
+    public boolean setWord(int address, int[] word, int nid){
+        int nword = ((int)(address/4))%4;
+        int block = address/16;
+        System.out.println("palabra: "+nword+", bloque: "+block);
         if(getOcupador()==-1 || getOcupador()==nid) {
             ocupa(nid);
             int otron = (nid==1)?2:1;
@@ -84,6 +92,7 @@ public class CacheDatos {
                         findNSetWord(block, nword, word);
                     } else {
                         //TODO: verificar deadlock
+                        libera();
                         return false;
                     }
                     
@@ -100,6 +109,7 @@ public class CacheDatos {
                         return true;
                     } else {
                         //TODO: verificar deadlock
+                        libera();
                         return false;
                     }
                 case 'R': //Bloque modificado, pero no es el que necesito
@@ -117,6 +127,7 @@ public class CacheDatos {
                             return true;
                         } else {
                             //TODO: verificar deadlock
+                            libera();
                             return false;
                         }
                     } else {
@@ -126,6 +137,7 @@ public class CacheDatos {
                     return false;
             } 
         } else {
+            System.out.println(getOcupador());
             return false;
         }
     };
@@ -210,6 +222,27 @@ public class CacheDatos {
         } else {
             return false;
         }
+    }
+    
+    @Override
+    public String toString() {
+        String res = "";
+        for(int i=0; i<cache.length; i++) {
+            for(int j=0; j<cache[i].length; j++) {
+                res += cache[i][j]+",";
+            }
+            res+="\n";
+        }
+        res+="\n";
+        for(int i=0; i<etiqueta.length; i++) {
+            res+=etiqueta[i]+",";
+        }
+        res+="\n";
+        for(int i=0; i<etiqueta.length; i++) {
+            res+=validez[i]+",";
+        }
+        
+        return res;
     }
     
 }

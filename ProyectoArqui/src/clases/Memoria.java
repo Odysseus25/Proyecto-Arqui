@@ -109,6 +109,40 @@ public class Memoria {
                 ", " + (memInst[120]) + ", " + (memInst[121]) + ", " + (memInst[122]) + ", " + (memInst[123]) +               
                 ", " + (memInst[124]) + ", " + (memInst[125]) + ", " + (memInst[126]) + ", " + (memInst[127]) + 
                 ", " + (memInst[128]) + ", " + (memInst[129]) + ", " + (memInst[130]) + ", " + (memInst[131]) +
+                ")\n" +
+                "(" + (memData[768]) + ", " + (memData[769]) + ", " + (memData[770]) + ", " + (memData[771]) + 
+                ", " + (memData[772]) + ", " + (memData[773]) + ", " + (memData[774]) + ", " + (memData[775]) +               
+                ", " + (memData[776]) + ", " + (memData[777]) + ", " + (memData[778]) + ", " + (memData[779]) +               
+                ", " + (memData[780]) + ", " + (memData[781]) + ", " + (memData[782]) + ", " + (memData[783]) + 
+                ", " + (memData[784]) + ", " + (memData[785]) + ", " + (memData[786]) + ", " + (memData[787]) +
+                ", " + (memData[788]) + ", " + (memData[789]) + ", " + (memData[790]) + ", " + (memData[791]) +               
+                ", " + (memData[24]) + ", " + (memData[25]) + ", " + (memData[26]) + ", " + (memData[27]) +               
+                ", " + (memData[28]) + ", " + (memData[29]) + ", " + (memData[30]) + ", " + (memData[31]) + 
+                ", " + (memData[32]) + ", " + (memData[33]) + ", " + (memData[34]) + ", " + (memData[35]) +
+                ", " + (memData[36]) + ", " + (memData[37]) + ", " + (memData[38]) + ", " + (memData[39]) +               
+                ", " + (memData[40]) + ", " + (memData[41]) + ", " + (memData[42]) + ", " + (memData[43]) +               
+                ", " + (memData[44]) + ", " + (memData[45]) + ", " + (memData[46]) + ", " + (memData[47]) + 
+                ", " + (memData[48]) + ", " + (memData[49]) + ", " + (memData[50]) + ", " + (memData[51]) +
+                ", " + (memData[52]) + ", " + (memData[53]) + ", " + (memData[54]) + ", " + (memData[55]) +               
+                ", " + (memData[56]) + ", " + (memData[57]) + ", " + (memData[58]) + ", " + (memData[59]) +               
+                ", " + (memData[60]) + ", " + (memData[61]) + ", " + (memData[62]) + ", " + (memData[63]) + 
+                ", " + (memData[64]) + ", " + (memData[65]) + ", " + (memData[66]) + ", " + (memData[67]) +
+                ", " + (memData[68]) + ", " + (memData[69]) + ", " + (memData[70]) + ", " + (memData[71]) +               
+                ", " + (memData[72]) + ", " + (memData[73]) + ", " + (memData[74]) + ", " + (memData[75]) +               
+                ", " + (memData[76]) + ", " + (memData[77]) + ", " + (memData[78]) + ", " + (memData[79]) + 
+                ", " + (memData[80]) + ", " + (memData[81]) + ", " + (memData[82]) + ", " + (memData[83]) +
+                ", " + (memData[84]) + ", " + (memData[85]) + ", " + (memData[86]) + ", " + (memData[87]) +               
+                ", " + (memData[88]) + ", " + (memData[89]) + ", " + (memData[90]) + ", " + (memData[91]) +               
+                ", " + (memData[92]) + ", " + (memData[93]) + ", " + (memData[94]) + ", " + (memData[95]) + 
+                ", " + (memData[96]) + ", " + (memData[97]) + ", " + (memData[98]) + ", " + (memData[99]) +
+                ", " + (memData[100]) + ", " + (memData[101]) + ", " + (memData[102]) + ", " + (memData[103]) +               
+                ", " + (memData[104]) + ", " + (memData[105]) + ", " + (memData[106]) + ", " + (memData[107]) +               
+                ", " + (memData[108]) + ", " + (memData[109]) + ", " + (memData[110]) + ", " + (memData[111]) + 
+                ", " + (memData[112]) + ", " + (memData[113]) + ", " + (memData[114]) + ", " + (memData[115]) +
+                ", " + (memData[116]) + ", " + (memData[117]) + ", " + (memData[118]) + ", " + (memData[119]) +               
+                ", " + (memData[120]) + ", " + (memData[121]) + ", " + (memData[122]) + ", " + (memData[123]) +               
+                ", " + (memData[124]) + ", " + (memData[125]) + ", " + (memData[126]) + ", " + (memData[127]) + 
+                ", " + (memData[128]) + ", " + (memData[129]) + ", " + (memData[130]) + ", " + (memData[131]) +
                 ")";
     }
 

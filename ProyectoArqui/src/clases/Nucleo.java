@@ -181,7 +181,7 @@ public class Nucleo {
          */
         @Override
         public void run() {
-            //System.out.println("tid: "+this.getId());
+            //System.out.println("hid: "+getEstHilo().getHid());
             int[] instruccion = RequestInst();
                 int op;
                 int r1;
@@ -251,17 +251,35 @@ public class Nucleo {
                     break;
                 case 35:    //LW, LOAD r2<-M(r1+r3)
                     //TODO: 
-                    //CacheDatos.getWord()
+                    pc += 4;
+                    int[] word = cd.getWord(r1+r3, nid);
+                    if(word!=null) {
+                        setEsperando(false);
+                        r[r2] = word[0];
+                    } else {
+                        setEsperando(true);
+                        System.out.println("N" + nid + ": Esperando latencia, LW");
+                    }
                     setFin(false);
                     guardaHilo();
-                    setEsperando(false);
                     break;
                 case 43:    //SW, STORE M(r1+r3)<-r2
                     //TODO:
-                    //CacheDatos.setWord()
+                    pc += 4;
+                    int[] save = new int[4];
+                    save[0] = r[r2];
+                    System.out.println("guardo: "+save[0]+" en: "+(r1+r3));
+                    boolean res = cd.setWord(r1+r3, save, nid);
+                    if(res) {
+                        setEsperando(false);
+                        System.out.println("N" + nid + " STORED BITCH");
+                    } else {
+                        setEsperando(true);
+                        System.out.println("N" + nid + ": Esperando latencia, SW");
+                    }
                     setFin(false);
                     guardaHilo();
-                    setEsperando(false);
+                    System.out.println("Memoria: "+cd.bus.mem);
                     break;
                 case 4:     //BEQZ, SALTO CONDICIONAL IGUAL A CERO
                     //System.out.println("N"+nid+": BEQZ r"+r1+" ->r"+r3);
@@ -302,13 +320,14 @@ public class Nucleo {
                     guardaHilo();
                     setEsperando(false);
                     break;
-                case 11:    //LL, LOAD LINKED
+                case 50:    //LL, LOAD LINKED
                     //TODO
+                    
                     setFin(false);
                     guardaHilo();
                     setEsperando(false);
                     break;
-                case 13:    //SC, STORE CONDITIONAL
+                case 51:    //SC, STORE CONDITIONAL
                     //TODO
                     setFin(false);
                     guardaHilo();
@@ -321,7 +340,7 @@ public class Nucleo {
                     setEsperando(false);
                     break;
                 case -1:
-                   // System.out.println("N" + nid + ": Esperando latencia");
+                   System.out.println("N" + nid + ": Esperando latencia, INST");
                     setFin(false);
                     setEsperando(true);
                     break;

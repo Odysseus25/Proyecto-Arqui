@@ -210,6 +210,9 @@ public class ProyectoArqui {
             
         }
         System.out.println(div);
+        System.out.println("Cache N1: \n"+n1.getCD());
+        System.out.println("Cache N2: \n"+n2.getCD());
+        System.out.println(div);
         System.out.println(div);
         System.out.println("RESULTADOS:");
         for(int i=0; i<finHilos.length; i++) {
@@ -217,6 +220,8 @@ public class ProyectoArqui {
             System.out.println("-->Ciclos de reloj ocupados: "+ciclosPorHilo[i]);
             System.out.println("-->Registros Finales: "+finHilos[i]);
         }
+        System.out.println(div);
+        System.out.println("-->Memoria Final: "+mem);
         
     }
     

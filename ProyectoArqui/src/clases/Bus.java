@@ -18,7 +18,7 @@ public class Bus {
     CacheDatos[] cachesD = new CacheDatos[2];
     public Bus(Memoria m){
         mem = m;
-        libera();
+        ocupador = new AtomicInteger(-1);
     };
     
     public void setCache(CacheDatos cd, int nid) {
@@ -43,6 +43,8 @@ public class Bus {
                 cachesD[otron-1].libera();
             } else {
                 //TODO: verificar deadlock
+                cachesD[otron-1].libera();
+                System.out.println(cachesD[otron-1].getOcupador());
                 return null;
             }
             int[] readblock = mem.Read(bloque,  true);
@@ -52,6 +54,7 @@ public class Bus {
             return readblock;
         }
         else{
+            System.out.println(getOcupador());
             return null;
         }
     };
@@ -65,6 +68,7 @@ public class Bus {
             }
             return readblock;
         } else {
+            System.out.println(getOcupador());
             return null;
         }
     };
@@ -78,10 +82,13 @@ public class Bus {
                 libera();
                 return true;
             } else {
+                //TODO: verificar deadlock
+                libera();
                 return false;
             }
             
         } else {
+            System.out.println(getOcupador());
             return false;
         }
     };
@@ -90,6 +97,7 @@ public class Bus {
         if(getOcupador() == -1 || getOcupador() == nid){
             return cachesD[nid-1].invalidar(block, nid);
         } else  {
+            System.out.println(getOcupador());
             return false;
         }
         
