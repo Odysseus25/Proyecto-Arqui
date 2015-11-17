@@ -202,7 +202,7 @@ public class Nucleo {
             }
             
 
-            //System.out.println(""+op+" "+r1+" "+r2+" "+r3);
+            System.out.println(""+op+" "+r1+" "+r2+" "+r3);
             switch (op) {
                 case 8:     //DADDI, SUMA CON LITERAL
                     //System.out.println("N"+nid+": DADDI r"+r1+" #"+r3+" ->r"+r2);
@@ -251,9 +251,9 @@ public class Nucleo {
                     break;
                 case 35:    //LW, LOAD r2<-M(r1+r3)
                     //TODO: 
-                    pc += 4;
-                    int[] word = cd.getWord(r1+r3, nid);
+                    int[] word = cd.getWord(r[r1]+r3, nid);
                     if(word!=null) {
+                        pc += 4;
                         setEsperando(false);
                         r[r2] = word[0];
                     } else {
@@ -265,12 +265,12 @@ public class Nucleo {
                     break;
                 case 43:    //SW, STORE M(r1+r3)<-r2
                     //TODO:
-                    pc += 4;
                     int[] save = new int[4];
                     save[0] = r[r2];
-                    System.out.println("guardo: "+save[0]+" en: "+(r1+r3));
-                    boolean res = cd.setWord(r1+r3, save, nid);
+                    System.out.println("guardo: "+save[0]+" en: "+(r[r1]+r3));
+                    boolean res = cd.setWord(r[r1]+r3, save, nid);
                     if(res) {
+                        pc += 4;
                         setEsperando(false);
                         System.out.println("N" + nid + " STORED BITCH");
                     } else {
@@ -279,7 +279,7 @@ public class Nucleo {
                     }
                     setFin(false);
                     guardaHilo();
-                    System.out.println("Memoria: "+cd.bus.mem);
+                    //System.out.println("Memoria: "+cd.bus.mem);
                     break;
                 case 4:     //BEQZ, SALTO CONDICIONAL IGUAL A CERO
                     //System.out.println("N"+nid+": BEQZ r"+r1+" ->r"+r3);

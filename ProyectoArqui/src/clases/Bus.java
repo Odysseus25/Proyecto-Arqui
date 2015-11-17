@@ -38,23 +38,23 @@ public class Bus {
                     for(int i = 0; i<4*4; i++) {
                         guardar[i] = cachesD[otron-1].cache[i][bloque%8];
                     }
-                    mem.Write(bloque, guardar, false);
+                    mem.Write(bloque, guardar, false, nid);
                 }
                 cachesD[otron-1].libera();
             } else {
                 //TODO: verificar deadlock
                 cachesD[otron-1].libera();
-                System.out.println(cachesD[otron-1].getOcupador());
+                System.out.println("Ocupa cache dentro de bus: "+cachesD[otron-1].getOcupador());
                 return null;
             }
-            int[] readblock = mem.Read(bloque,  true);
+            int[] readblock = mem.Read(bloque,  true, nid);
             if(readblock != null){
                 libera();
             }
             return readblock;
         }
         else{
-            System.out.println(getOcupador());
+            System.out.println("Ocupa el bus: "+getOcupador());
             return null;
         }
     };
@@ -62,7 +62,7 @@ public class Bus {
     public synchronized int[] getBloqueInstr(int bloque, int nid){
         if(getOcupador() == -1 || getOcupador() == nid){
             ocupa(nid);
-            int[] readblock = mem.Read(bloque, true);
+            int[] readblock = mem.Read(bloque, true, nid);
             if(readblock != null){
                 libera();
             }
@@ -77,18 +77,19 @@ public class Bus {
         //TODO: modificar.
         if(getOcupador() == -1 || getOcupador() == nid){
             ocupa(nid);
-            boolean res = mem.Write(bloque, save, true);
+            boolean res = mem.Write(bloque, save, true, nid);
             if(res){
                 libera();
                 return true;
             } else {
                 //TODO: verificar deadlock
+                System.out.println("esperando latencia memoria");
                 libera();
                 return false;
             }
             
         } else {
-            System.out.println(getOcupador());
+            System.out.println("Ocupa el bus: "+getOcupador());
             return false;
         }
     };

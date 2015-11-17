@@ -60,12 +60,14 @@ public class CacheDatos {
                     for(int i = 0; i<4*4; i++) {
                         guardar[i] = cache[i][block%8];
                     }
+                    System.out.println("R: le caigo encima, guardo: "+etiqueta[block%8]);
                     boolean resSave = bus.setBloque(etiqueta[block%8], guardar, nid);
                     traeBloque(block, nid);
-                    if(validez[block%8]=='C' && resSave) {
+                    if((validez[block%8]=='C') && resSave) {
                         libera();
                         return findWord(block, nword);
                     } else {
+                        System.out.println("NULL");
                         return null;
                     }
                 default:
@@ -80,15 +82,18 @@ public class CacheDatos {
     public boolean setWord(int address, int[] word, int nid){
         int nword = ((int)(address/4))%4;
         int block = address/16;
-        System.out.println("palabra: "+nword+", bloque: "+block);
+        System.out.println("direccion: "+address+", palabra: "+nword+", bloque: "+block);
         if(getOcupador()==-1 || getOcupador()==nid) {
             ocupa(nid);
             int otron = (nid==1)?2:1;
-            switch (verificarBloque(block)) {
+            char verBlock = verificarBloque(block);
+            System.out.println("verblock: "+verBlock);
+            switch (verBlock) {
                 case 'C': //Bloque compartido
                     boolean resInv = bus.invalidar(block, otron);
                     if(resInv) {
                         libera();
+                        
                         findNSetWord(block, nword, word);
                     } else {
                         //TODO: verificar deadlock
@@ -117,9 +122,10 @@ public class CacheDatos {
                     for(int i = 0; i<4*4; i++) {
                         guardar[i] = cache[i][block%8];
                     }
+                    System.out.println("R: le caigo encima, guardo: "+etiqueta[block%8]);
                     boolean resSave = bus.setBloque(etiqueta[block%8], guardar, nid);
                     traeBloque(block, nid);
-                    if(validez[block%8]=='C' && resSave) {
+                    if((validez[block%8]=='C') && resSave) {
                         resInv = bus.invalidar(block, otron);
                         if(resInv) {
                             findNSetWord(block, nword, word);
@@ -131,13 +137,14 @@ public class CacheDatos {
                             return false;
                         }
                     } else {
+                        System.out.println("NULL");
                         return false;
                     }
                 default:
                     return false;
             } 
         } else {
-            System.out.println(getOcupador());
+            System.out.println("Ocupado por: "+getOcupador());
             return false;
         }
     };
