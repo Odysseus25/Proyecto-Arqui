@@ -25,7 +25,7 @@ public class Bus {
         cachesD[nid-1] = cd;
     };
     
-    public synchronized int[] getBloqueDatos(int bloque, int nid){
+    public synchronized int[] getBloqueDatos(int bloque, int nid, boolean espere){
         if(getOcupador() == -1 || getOcupador() == nid){
             ocupa(nid);
             //TODO: se pide en un ciclo y se usa hasta el otro
@@ -34,8 +34,8 @@ public class Bus {
                 cachesD[otron-1].ocupa(nid);
                 char bloqueOtroN = cachesD[otron-1].verificarBloque(bloque);
                 if(bloqueOtroN=='M') {
-                    int[] guardar =  new int[4*4];
-                    for(int i = 0; i<4*4; i++) {
+                    int[] guardar =  new int[16];
+                    for(int i = 0; i<guardar.length; i++) {
                         guardar[i] = cachesD[otron-1].cache[i][bloque%8];
                     }
                     mem.Write(bloque, guardar, false, nid);
@@ -47,7 +47,7 @@ public class Bus {
                 System.out.println("Ocupa cache dentro de bus: "+cachesD[otron-1].getOcupador());
                 return null;
             }
-            int[] readblock = mem.Read(bloque,  true, nid);
+            int[] readblock = mem.Read(bloque,  espere, nid);
             if(readblock != null){
                 libera();
             }
@@ -73,11 +73,11 @@ public class Bus {
         }
     };
     
-    public synchronized boolean setBloque(int bloque, int save[], int nid){
+    public synchronized boolean setBloque(int bloque, int save[], int nid, boolean espere){
         //TODO: modificar.
         if(getOcupador() == -1 || getOcupador() == nid){
             ocupa(nid);
-            boolean res = mem.Write(bloque, save, true, nid);
+            boolean res = mem.Write(bloque, save, espere, nid);
             if(res){
                 libera();
                 return true;
@@ -95,12 +95,8 @@ public class Bus {
     };
     
     public synchronized boolean invalidar(int block, int nid) {
-        if(getOcupador() == -1 || getOcupador() == nid){
-            return cachesD[nid-1].invalidar(block, nid);
-        } else  {
-            System.out.println(getOcupador());
-            return false;
-        }
+        
+        return cachesD[nid-1].invalidar(block, nid);
         
     };
 

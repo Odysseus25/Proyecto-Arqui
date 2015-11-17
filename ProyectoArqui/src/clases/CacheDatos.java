@@ -61,7 +61,7 @@ public class CacheDatos {
                         guardar[i] = cache[i][block%8];
                     }
                     System.out.println("R: le caigo encima, guardo: "+etiqueta[block%8]);
-                    boolean resSave = bus.setBloque(etiqueta[block%8], guardar, nid);
+                    boolean resSave = bus.setBloque(etiqueta[block%8], guardar, nid, false);
                     traeBloque(block, nid);
                     if((validez[block%8]=='C') && resSave) {
                         libera();
@@ -93,7 +93,6 @@ public class CacheDatos {
                     boolean resInv = bus.invalidar(block, otron);
                     if(resInv) {
                         libera();
-                        
                         findNSetWord(block, nword, word);
                     } else {
                         //TODO: verificar deadlock
@@ -122,9 +121,10 @@ public class CacheDatos {
                     for(int i = 0; i<4*4; i++) {
                         guardar[i] = cache[i][block%8];
                     }
-                    System.out.println("R: le caigo encima, guardo: "+etiqueta[block%8]);
-                    boolean resSave = bus.setBloque(etiqueta[block%8], guardar, nid);
+                    
+                    boolean resSave = bus.setBloque(etiqueta[block%8], guardar, nid, false);
                     traeBloque(block, nid);
+                    System.out.println("R: le caigo encima, guardo: "+etiqueta[block%8]+", valido? "+validez[block%8]);
                     if((validez[block%8]=='C') && resSave) {
                         resInv = bus.invalidar(block, otron);
                         if(resInv) {
@@ -187,10 +187,11 @@ public class CacheDatos {
     public void traeBloque(int block, int nid){
         //System.out.println("traje bloque");
         int[] bloque;
-        bloque = bus.getBloqueDatos(block, nid);
+        bloque = bus.getBloqueDatos(block, nid, true);
         if(bloque == null){
-            validez[block%8] = 'I';
+            //validez[block%8] = 'I';
         } else {
+            System.out.println("trayendo bloque: "+block+", data0: "+bloque[0]+", data3: "+bloque[3]);
             for(int i=0; i<bloque.length; i++) {
                 cache[i][block%8] = bloque[i];
             }
@@ -218,6 +219,7 @@ public class CacheDatos {
     
     public boolean invalidar(int block, int nid) {
         if(getOcupador()==-1) {
+            System.out.println("Invalida: "+getOcupador());
             ocupa(nid);
             for(int i = 0; i<this.validez.length; i++) {
                 if(this.etiqueta[i]==block) {
@@ -231,14 +233,22 @@ public class CacheDatos {
         }
     }
     
+    /*public void escribe() {
+        for(int i=0; i<cache.length; i++) {
+            if(etiqueta())
+        }
+    }*/
+    
     @Override
     public String toString() {
         String res = "";
         for(int i=0; i<cache.length; i++) {
-            for(int j=0; j<cache[i].length; j++) {
-                res += cache[i][j]+",";
+            if(i%4 == 0) {
+                for(int j=0; j<cache[i].length; j++) {
+                    res += cache[i][j]+",";
+                }
+                res+="\n";
             }
-            res+="\n";
         }
         res+="\n";
         for(int i=0; i<etiqueta.length; i++) {

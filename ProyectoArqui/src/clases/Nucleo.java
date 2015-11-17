@@ -37,6 +37,7 @@ public class Nucleo {
      * @param barrera 
      */
     public Nucleo(int id, double quantum, Bus busInst, Bus busData, CyclicBarrier barrera){ // recibe el bus compartido que tiene la memoria compartida
+        rl=0;
         nid = id;
         this.quantum = quantum;
         ci = new CacheInstrucciones(busInst);
@@ -322,16 +323,43 @@ public class Nucleo {
                     break;
                 case 50:    //LL, LOAD LINKED
                     //TODO
-                    
+                    int[] word1 = cd.getWord(r[r1]+r3, nid);
+                    if(word1!=null) {
+                        pc += 4;
+                        setEsperando(false);
+                        rl = r[r1]+r3;
+                        r[r2] = word1[0];
+                        System.out.println("N" + nid + " LOAD LINKED BITCH");
+                    } else {
+                        setEsperando(true);
+                        System.out.println("N" + nid + ": Esperando latencia, LL");
+                    }
                     setFin(false);
                     guardaHilo();
-                    setEsperando(false);
                     break;
                 case 51:    //SC, STORE CONDITIONAL
                     //TODO
+                    if(rl==r[r1]+r3) {
+                        int[] save1 = new int[4];
+                        save1[0] = r[r2];
+                        System.out.println("guardo: "+save1[0]+" en: "+(r[r1]+r3));
+                        boolean res1 = cd.setWord(r[r1]+r3, save1, nid);
+                        if(res1) {
+                            pc += 4;
+                            setEsperando(false);
+                            System.out.println("N" + nid + " STORED CONDITIONAL BITCH");
+                        } else {
+                            setEsperando(true);
+                            System.out.println("N" + nid + ": Esperando latencia, SC");
+                        }
+                    } else {
+                        System.out.println("N" + nid + "NO STORED CONDITONAL BITCH");
+                        r[r2]=0;
+                        pc += 4;
+                        setEsperando(false);
+                    }
                     setFin(false);
                     guardaHilo();
-                    setEsperando(false);
                     break;
                 case 63:    //FIN, FIN
                    // System.out.println("N"+nid+": FIN t");

@@ -14,8 +14,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class Memoria {
     private AtomicInteger latenciaM;
     private AtomicInteger[] tiempoLatencia;
-    public  int memInst[]= new int[640*4];
-    int memData[]= new int[1408*4];
+    public  int memInst[]= new int[160*4];
+    int memData[]= new int[352*4];
     public Memoria(int latencia) {
         latenciaM= new AtomicInteger(latencia);
         tiempoLatencia = new AtomicInteger[2];
@@ -43,18 +43,19 @@ public class Memoria {
         System.out.println("guardando1: "+bloque+", datos: "+res[0]+","+res[4]+", size: "+res.length);
         if((getTiempoLatencia(nid) < getLatenciaM()) && espere){
             setTiempoLatencia((getTiempoLatencia(nid) + 1), nid);
-            System.out.println("guardando3: "+bloque+", datos: "+res[0]+","+res[4]+", size: "+res.length);
+            System.out.println("write: nucleo: "+nid +", latencia esperada: "+getTiempoLatencia(nid)+", latencia total: "+getLatenciaM() );
+            //System.out.println("guardando3: "+bloque+", datos: "+res[0]+","+res[4]+", size: "+res.length);
             return false;
-        }
-        else{
+        } else {
             if(espere) {
                 setTiempoLatencia(0, nid);
             }
-            System.out.println("guardando2: "+bloque+", datos: "+res[0]+","+res[4]+", size: "+res.length);
-            if(bloque < 160) {
+            
+            if(bloque < 40) {
                 System.arraycopy(res, 0, memInst, bloque*16, res.length);
                 return true;
             } else {
+                System.out.println("guardando2: "+bloque+", datos: "+res[0]+","+res[4]+", size: "+res.length);
                 System.arraycopy(res, 0, memData, bloque*16-(memInst.length), res.length);
                 return true;
             }
@@ -64,7 +65,7 @@ public class Memoria {
     public int[] Read(int bloque, boolean espere, int nid){
        
         if((getTiempoLatencia(nid) < getLatenciaM()) && espere){
-            System.out.println("nucleo: "+nid +", latencia esperada: "+getTiempoLatencia(nid)+", latencia total: "+getLatenciaM() );
+            System.out.println("read: nucleo: "+nid +", latencia esperada: "+getTiempoLatencia(nid)+", latencia total: "+getLatenciaM() );
             int tiempo = getTiempoLatencia(nid); tiempo++;
             setTiempoLatencia(tiempo, nid);
             return null;
@@ -74,7 +75,7 @@ public class Memoria {
                 setTiempoLatencia(0, nid);
             }
             int[] res = new int[4*4];
-            if(bloque < 160) {
+            if(bloque < 40) {
                 for(int i=0; i<16; i++) {
                     res[i] = memInst[(bloque*16)+i];
                 }
@@ -95,7 +96,16 @@ public class Memoria {
         }
         res+=" )\n( ";
         for(int i=0; i<memData.length; i++) {
-            res+=memData[i]+",";
+            
+            if(i%16 == 0) {
+                res+="bloque "+(i/16+40) + " ";
+            }
+            if(i%4 == 0) {
+                res+=memData[i]+",";
+            }
+            if(i%16 == 15) {
+                res+="\n";
+            }
         }
         res+=" )";
         return res;
