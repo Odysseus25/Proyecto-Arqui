@@ -44,6 +44,7 @@ public class Bus {
             } else {
                 //TODO: verificar deadlock
                 cachesD[otron-1].libera();
+                libera();
                 System.out.println("Ocupa cache dentro de bus: "+cachesD[otron-1].getOcupador());
                 return null;
             }
@@ -68,7 +69,7 @@ public class Bus {
             }
             return readblock;
         } else {
-            System.out.println(getOcupador());
+            System.out.println("ocupa para inst: "+getOcupador());
             return null;
         }
     };
@@ -83,8 +84,8 @@ public class Bus {
                 return true;
             } else {
                 //TODO: verificar deadlock
-                System.out.println("esperando latencia memoria");
-                libera();
+                //System.out.println("esperando latencia memoria para set");
+                //libera();
                 return false;
             }
             
@@ -95,28 +96,34 @@ public class Bus {
     };
     
     public synchronized boolean invalidar(int block, int nid) {
-        
-        return cachesD[nid-1].invalidar(block, nid);
+        if(getOcupador() == -1 || getOcupador() == nid){
+            ocupa(nid);
+            boolean res = cachesD[nid-1].invalidar(block, nid);
+            libera();
+            return res;
+        } else {
+            return false;
+        }
         
     };
 
     /**
      * @return the ocupador
      */
-    public int getOcupador() {
+    public synchronized int getOcupador() {
         return ocupador.get();
     };
 
     /**
      * @param ocupador the ocupador to set
      */
-    public void ocupa(int ocupador) {
+    public synchronized void ocupa(int ocupador) {
         this.ocupador.set(ocupador);
     };
     
     /**
      */
-    public void libera() {
+    public synchronized void libera() {
         this.ocupador.set(-1);
     };
 }

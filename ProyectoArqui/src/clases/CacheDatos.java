@@ -52,7 +52,7 @@ public class CacheDatos {
                         return findWord(block, nword);
                     } else {
                         //TODO: verificar deadlock
-                        libera();
+                        //libera();
                         return null;
                     }
                 case 'R': //Bloque modificado, pero no es el que necesito
@@ -60,21 +60,21 @@ public class CacheDatos {
                     for(int i = 0; i<4*4; i++) {
                         guardar[i] = cache[i][block%8];
                     }
-                    System.out.println("R: le caigo encima, guardo: "+etiqueta[block%8]);
+                    System.out.println("N:"+nid+" (R)le caigo encima, guardo: "+etiqueta[block%8]);
                     boolean resSave = bus.setBloque(etiqueta[block%8], guardar, nid, false);
                     traeBloque(block, nid);
                     if((validez[block%8]=='C') && resSave) {
                         libera();
                         return findWord(block, nword);
                     } else {
-                        System.out.println("NULL");
+                        System.out.println("no guardo bloque o espera latencia (R) "+resSave);
                         return null;
                     }
                 default:
                     return null;
             }
         } else {
-            System.out.println(getOcupador());
+            System.out.println("ocupa el bus(get): "+getOcupador());
             return null;
         }
     };
@@ -124,7 +124,7 @@ public class CacheDatos {
                     
                     boolean resSave = bus.setBloque(etiqueta[block%8], guardar, nid, false);
                     traeBloque(block, nid);
-                    System.out.println("R: le caigo encima, guardo: "+etiqueta[block%8]+", valido? "+validez[block%8]);
+                    System.out.println("N:"+nid+" (R)le caigo encima, guardo: "+etiqueta[block%8]+", valido? "+validez[block%8]);
                     if((validez[block%8]=='C') && resSave) {
                         resInv = bus.invalidar(block, otron);
                         if(resInv) {
@@ -137,14 +137,14 @@ public class CacheDatos {
                             return false;
                         }
                     } else {
-                        System.out.println("NULL");
+                        System.out.println("no guardo bloque o espera latencia (R) "+resSave);
                         return false;
                     }
                 default:
                     return false;
             } 
         } else {
-            System.out.println("Ocupado por: "+getOcupador());
+            System.out.println("Ocupado por(set): "+getOcupador());
             return false;
         }
     };
