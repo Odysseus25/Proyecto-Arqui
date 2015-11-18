@@ -52,22 +52,23 @@ public class CacheDatos {
                         return findWord(block, nword);
                     } else {
                         //TODO: verificar deadlock
-                        //libera();
+                        libera();
                         return null;
                     }
                 case 'R': //Bloque modificado, pero no es el que necesito
-                    int[] guardar =  new int[4*4];
-                    for(int i = 0; i<4*4; i++) {
+                    int[] guardar =  new int[16];
+                    for(int i = 0; i<16; i++) {
                         guardar[i] = cache[i][block%8];
                     }
-                    System.out.println("N:"+nid+" (R)le caigo encima, guardo: "+etiqueta[block%8]);
+                    System.out.println("N:"+nid+" (R)le caigo encima (get), guardo: "+etiqueta[block%8]);
                     boolean resSave = bus.setBloque(etiqueta[block%8], guardar, nid, false);
                     traeBloque(block, nid);
                     if((validez[block%8]=='C') && resSave) {
                         libera();
                         return findWord(block, nword);
                     } else {
-                        System.out.println("no guardo bloque o espera latencia (R) "+resSave);
+                        libera();
+                        System.out.println("no guardo bloque (bus busy) o espera latencia (R) "+resSave);
                         return null;
                     }
                 default:
@@ -99,7 +100,6 @@ public class CacheDatos {
                         libera();
                         return false;
                     }
-                    
                     return true;
                 case 'M': //Bloque modificado
                     findNSetWord(block, nword, word);
@@ -121,7 +121,6 @@ public class CacheDatos {
                     for(int i = 0; i<4*4; i++) {
                         guardar[i] = cache[i][block%8];
                     }
-                    
                     boolean resSave = bus.setBloque(etiqueta[block%8], guardar, nid, false);
                     traeBloque(block, nid);
                     System.out.println("N:"+nid+" (R)le caigo encima, guardo: "+etiqueta[block%8]+", valido? "+validez[block%8]);
@@ -137,7 +136,8 @@ public class CacheDatos {
                             return false;
                         }
                     } else {
-                        System.out.println("no guardo bloque o espera latencia (R) "+resSave);
+                        libera();
+                        System.out.println("no guardo bloque (bus busy) o espera latencia (R) "+resSave);
                         return false;
                     }
                 default:
@@ -218,9 +218,10 @@ public class CacheDatos {
     }
     
     public boolean invalidar(int block, int nid) {
-        if(getOcupador()==-1) {
-            System.out.println("Invalida: "+getOcupador());
+        if(getOcupador()==-1 || getOcupador()==nid) {
+            
             ocupa(nid);
+            System.out.println("Invalida: "+getOcupador());
             for(int i = 0; i<this.validez.length; i++) {
                 if(this.etiqueta[i]==block) {
                     this.validez[i] = 'I';

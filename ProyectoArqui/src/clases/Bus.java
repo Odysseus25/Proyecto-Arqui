@@ -30,6 +30,7 @@ public class Bus {
             ocupa(nid);
             //TODO: se pide en un ciclo y se usa hasta el otro
             int otron = (nid==1)?2:1;
+            int[] save = null;
             if(cachesD[otron-1].getOcupador()==-1 || cachesD[otron-1].getOcupador()==nid) {
                 cachesD[otron-1].ocupa(nid);
                 char bloqueOtroN = cachesD[otron-1].verificarBloque(bloque);
@@ -38,7 +39,8 @@ public class Bus {
                     for(int i = 0; i<guardar.length; i++) {
                         guardar[i] = cachesD[otron-1].cache[i][bloque%8];
                     }
-                    mem.Write(bloque, guardar, false, nid);
+                    save = guardar;
+                    mem.Write(bloque, guardar, espere, nid);
                 }
                 cachesD[otron-1].libera();
             } else {
@@ -48,10 +50,14 @@ public class Bus {
                 System.out.println("Ocupa cache dentro de bus: "+cachesD[otron-1].getOcupador());
                 return null;
             }
-            int[] readblock = mem.Read(bloque,  espere, nid);
-            if(readblock != null){
+            if(save!=null){
                 libera();
+                return save;
             }
+            int[] readblock = mem.Read(bloque,  espere, nid);
+            //if(readblock != null){
+                libera();
+            //}
             return readblock;
         }
         else{
@@ -64,9 +70,9 @@ public class Bus {
         if(getOcupador() == -1 || getOcupador() == nid){
             ocupa(nid);
             int[] readblock = mem.Read(bloque, true, nid);
-            if(readblock != null){
+            //if(readblock != null){
                 libera();
-            }
+            //}
             return readblock;
         } else {
             System.out.println("ocupa para inst: "+getOcupador());
@@ -85,7 +91,7 @@ public class Bus {
             } else {
                 //TODO: verificar deadlock
                 //System.out.println("esperando latencia memoria para set");
-                //libera();
+                libera();
                 return false;
             }
             

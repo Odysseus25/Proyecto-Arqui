@@ -353,7 +353,7 @@ public class Nucleo {
                             System.out.println("N" + nid + ": Esperando latencia, SC");
                         }
                     } else {
-                        System.out.println("N" + nid + "NO STORED CONDITONAL BITCH");
+                        System.out.println("N" + nid + " NO STORED CONDITONAL BITCH");
                         r[r2]=0;
                         pc += 4;
                         setEsperando(false);
