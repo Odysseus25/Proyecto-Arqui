@@ -35,6 +35,7 @@ public class Bus {
                 cachesD[otron-1].ocupa(nid);
                 char bloqueOtroN = cachesD[otron-1].verificarBloque(bloque);
                 if(bloqueOtroN=='M') {
+                    System.out.println("guardo de la otra cache");
                     int[] guardar =  new int[16];
                     for(int i = 0; i<guardar.length; i++) {
                         guardar[i] = cachesD[otron-1].cache[i][bloque%8];
@@ -55,9 +56,9 @@ public class Bus {
                 return save;
             }
             int[] readblock = mem.Read(bloque,  espere, nid);
-            //if(readblock != null){
+            if(readblock != null){
                 libera();
-            //}
+            }
             return readblock;
         }
         else{
@@ -70,9 +71,9 @@ public class Bus {
         if(getOcupador() == -1 || getOcupador() == nid){
             ocupa(nid);
             int[] readblock = mem.Read(bloque, true, nid);
-            //if(readblock != null){
+            if(readblock != null){
                 libera();
-            //}
+            }
             return readblock;
         } else {
             System.out.println("ocupa para inst: "+getOcupador());
@@ -91,7 +92,7 @@ public class Bus {
             } else {
                 //TODO: verificar deadlock
                 //System.out.println("esperando latencia memoria para set");
-                libera();
+                //libera();
                 return false;
             }
             

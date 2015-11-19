@@ -32,7 +32,7 @@ public class CacheDatos {
     };
     
     //TODO: Liberar recursos si devuelve null;
-    public int[] getWord(int address, int nid){
+    public synchronized int[] getWord(int address, int nid){
         
         int nword = (address/4)%4;
         int block = address/16;
@@ -80,7 +80,7 @@ public class CacheDatos {
         }
     };
     
-    public boolean setWord(int address, int[] word, int nid){
+    public synchronized boolean setWord(int address, int[] word, int nid){
         int nword = ((int)(address/4))%4;
         int block = address/16;
         System.out.println("direccion: "+address+", palabra: "+nword+", bloque: "+block);
@@ -184,7 +184,7 @@ public class CacheDatos {
         validez[block%8] = 'M';
     }
     
-    public void traeBloque(int block, int nid){
+    public  void traeBloque(int block, int nid){
         //System.out.println("traje bloque");
         int[] bloque;
         bloque = bus.getBloqueDatos(block, nid, true);

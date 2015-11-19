@@ -283,7 +283,7 @@ public class Nucleo {
                     //System.out.println("Memoria: "+cd.bus.mem);
                     break;
                 case 4:     //BEQZ, SALTO CONDICIONAL IGUAL A CERO
-                    //System.out.println("N"+nid+": BEQZ r"+r1+" ->r"+r3);
+                    System.out.println("N"+nid+": BEQZ r"+r1+"="+r[r1]+" ->r"+r3);
                     pc += 4;
                     if(r[r1]==0) {
                         pc += (r3*4);
@@ -294,7 +294,7 @@ public class Nucleo {
                     setEsperando(false);
                     break;
                 case 5:     //BNEZ, SALTO CONDICIONAL NO IGUAL
-                    //System.out.println("N"+nid+": BNEZ r"+r1+" ->r"+r3);
+                    System.out.println("N"+nid+": BNEZ r"+r1+"="+r[r1]+" ->r"+r3);
                     pc += 4;
                     if(r[r1]!=0) {
                         pc += (r3*4);
@@ -329,8 +329,9 @@ public class Nucleo {
                         setEsperando(false);
                         rl = r[r1]+r3;
                         r[r2] = word1[0];
-                        System.out.println("N" + nid + " LOAD LINKED BITCH");
+                        System.out.println("N" + nid + " LOAD LINKED BITCH. RX: "+r[r2]);
                     } else {
+                        rl=-1;
                         setEsperando(true);
                         System.out.println("N" + nid + ": Esperando latencia, LL");
                     }
@@ -347,7 +348,8 @@ public class Nucleo {
                         if(res1) {
                             pc += 4;
                             setEsperando(false);
-                            System.out.println("N" + nid + " STORED CONDITIONAL BITCH");
+                            System.out.println("N" + nid + " STORED CONDITIONAL BITCH, RX: "+r[r2]);
+                            
                         } else {
                             setEsperando(true);
                             System.out.println("N" + nid + ": Esperando latencia, SC");
@@ -358,6 +360,7 @@ public class Nucleo {
                         pc += 4;
                         setEsperando(false);
                     }
+                    rl=-1;
                     setFin(false);
                     guardaHilo();
                     break;
