@@ -162,7 +162,8 @@ public class ProyectoArqui {
                     System.err.println("MFT");
                     Logger.getLogger(ProyectoArqui.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                
+                n1.invalidar();
+                n2.invalidar();
                 finN1=n1.isFin();
                 finN2=n2.isFin();
                 if(finN1) {
@@ -185,12 +186,22 @@ public class ProyectoArqui {
                 
                 if((tiempo1>=n1.getQuantum())&&!n1.isTerminado()) {//Si se acaba el quantum y no se ha terminado, guarde el hilo
                     System.out.println("Se acabó el quantum de N1");
+                    if(n1.llact) {
+                        n1.rl = -1;
+                        n1.llact=false;
+                        n1.bloquell=-1;
+                    }
                     n1.guardaHilo();
                     colaEjecucion.add(n1.getEstHilo());
                     finN1=true;
                 } 
                 if(tiempo2>=n2.getQuantum()&&!n2.isTerminado()) {//Si se acaba el quantum y no se ha terminado, guarde el hilo
                     System.out.println("Se acabó el quantum de N2");
+                    if(n2.llact) {
+                        n2.rl = -1;
+                        n2.llact=false;
+                        n2.bloquell=-1;
+                    }
                     n2.guardaHilo();
                     colaEjecucion.add(n2.getEstHilo());
                     finN2=true;

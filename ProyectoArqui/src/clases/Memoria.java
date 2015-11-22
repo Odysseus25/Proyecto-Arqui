@@ -40,7 +40,7 @@ public class Memoria {
     }
     
     public boolean Write(int bloque, int res[], boolean espere, int nid){
-        System.out.println("guardando1: "+bloque+", datos: "+res[0]+","+res[4]+", size: "+res.length);
+        System.out.println("guardando1: "+bloque+", datos: ("+res[0]+","+res[4]+","+res[8]+","+res[12]+"), size: "+res.length);
         if((getTiempoLatencia(nid) < getLatenciaM()) && espere){
             setTiempoLatencia((getTiempoLatencia(nid) + 1), nid);
             System.out.println("write: nucleo: "+nid +", latencia esperada: "+getTiempoLatencia(nid)+", latencia total: "+getLatenciaM() );
@@ -55,7 +55,7 @@ public class Memoria {
                 System.arraycopy(res, 0, memInst, bloque*16, res.length);
                 return true;
             } else {
-                System.out.println("guardando2: "+bloque+", datos: "+res[0]+","+res[4]+", size: "+res.length);
+                System.out.println("guardando: "+bloque+", datos: ("+res[0]+","+res[4]+","+res[8]+","+res[12]+"), size: "+res.length);
                 System.arraycopy(res, 0, memData, bloque*16-(memInst.length), res.length);
                 return true;
             }

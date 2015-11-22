@@ -22,7 +22,9 @@ public class Nucleo {
     private CacheDatos cd;
     int r[] = new int[32];
     int pc;
-    int rl;
+    public int rl;
+    public boolean llact;
+    public int bloquell;
     CyclicBarrier barrera;
     private boolean terminado;
     private boolean esperando;
@@ -37,7 +39,7 @@ public class Nucleo {
      * @param barrera 
      */
     public Nucleo(int id, double quantum, Bus busInst, Bus busData, CyclicBarrier barrera){ // recibe el bus compartido que tiene la memoria compartida
-        rl=0;
+        rl=-1;
         nid = id;
         this.quantum = quantum;
         ci = new CacheInstrucciones(busInst);
@@ -48,6 +50,9 @@ public class Nucleo {
         }
         terminado=false;
         esperando = false;
+        cd.setCore(this);
+        llact = false;
+        bloquell=-1;
     };    
 
     /**
@@ -268,9 +273,9 @@ public class Nucleo {
                     //TODO:
                     int[] save = new int[4];
                     save[0] = r[r2];
-                    System.out.println("guardo: "+save[0]+" en: "+(r[r1]+r3));
                     boolean res = cd.setWord(r[r1]+r3, save, nid);
                     if(res) {
+                        System.out.println("sw: guardo: "+save[0]+" en: "+(r[r1]+r3));
                         pc += 4;
                         setEsperando(false);
                         System.out.println("N" + nid + " STORED BITCH");
@@ -328,8 +333,10 @@ public class Nucleo {
                         pc += 4;
                         setEsperando(false);
                         rl = r[r1]+r3;
+                        llact = true;
+                        bloquell = (rl/16);
                         r[r2] = word1[0];
-                        System.out.println("N" + nid + " LOAD LINKED BITCH. RX: "+r[r2]);
+                        System.out.println("N" + nid + " LOAD LINKED BITCH: "+rl+". R"+r2+": "+r[r2]);
                     } else {
                         rl=-1;
                         setEsperando(true);
@@ -343,24 +350,30 @@ public class Nucleo {
                     if(rl==r[r1]+r3) {
                         int[] save1 = new int[4];
                         save1[0] = r[r2];
-                        System.out.println("guardo: "+save1[0]+" en: "+(r[r1]+r3));
+                        
                         boolean res1 = cd.setWord(r[r1]+r3, save1, nid);
                         if(res1) {
+                            System.out.println("sc: guardo: "+save1[0]+" en: "+(r[r1]+r3));
+                            llact=false;
+                            bloquell=-1;
                             pc += 4;
                             setEsperando(false);
-                            System.out.println("N" + nid + " STORED CONDITIONAL BITCH, RX: "+r[r2]);
-                            
+                            System.out.println("N" + nid + " STORED CONDITIONAL BITCH: "+rl+". R"+r2+": "+r[r2]);
+                            rl=-1;
                         } else {
                             setEsperando(true);
                             System.out.println("N" + nid + ": Esperando latencia, SC");
                         }
                     } else {
+                        rl=-1;
+                        llact=false;
+                        bloquell=-1;
                         System.out.println("N" + nid + " NO STORED CONDITONAL BITCH");
                         r[r2]=0;
                         pc += 4;
                         setEsperando(false);
                     }
-                    rl=-1;
+                    //rl=-1;
                     setFin(false);
                     guardaHilo();
                     break;
@@ -382,8 +395,6 @@ public class Nucleo {
                     setEsperando(false);
                     break;
             }
-            
-            
             try {//Espero en la barrera para poder sincronizar el reloj.
                // System.out.println("barrera wait, tid: "+Thread.currentThread().getId());
                 barrera.await();
@@ -443,6 +454,19 @@ public class Nucleo {
     
     public void guardaHilo(){
         this.setEstHilo(new EstructuraHilo(getEstHilo().getHid(), pc, 0, r));
+    }
+    
+    public void invalidar() {
+        if(llact) {
+            if(bloquell==cd.bInv) {
+                System.err.println("bll="+bloquell+", bInv="+cd.bInv);
+                rl = -1;
+                llact=false;
+                bloquell=-1;
+            }
+        }
+    
+        cd.invalida();
     }
     
     @Override

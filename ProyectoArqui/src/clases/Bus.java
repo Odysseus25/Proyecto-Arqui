@@ -26,12 +26,14 @@ public class Bus {
     };
     
     public synchronized int[] getBloqueDatos(int bloque, int nid, boolean espere){
-        if(getOcupador() == -1 || getOcupador() == nid){
+        int oc = getOcupador();
+        if(oc == -1 || oc == nid){
             ocupa(nid);
             //TODO: se pide en un ciclo y se usa hasta el otro
             int otron = (nid==1)?2:1;
             int[] save = null;
-            if(cachesD[otron-1].getOcupador()==-1 || cachesD[otron-1].getOcupador()==nid) {
+            int ocC = cachesD[otron-1].getOcupador();
+            if(ocC == -1 || ocC == nid){
                 cachesD[otron-1].ocupa(nid);
                 char bloqueOtroN = cachesD[otron-1].verificarBloque(bloque);
                 if(bloqueOtroN=='M') {
@@ -41,7 +43,8 @@ public class Bus {
                         guardar[i] = cachesD[otron-1].cache[i][bloque%8];
                     }
                     save = guardar;
-                    mem.Write(bloque, guardar, espere, nid);
+                    mem.Write(bloque, guardar, false, nid);
+                    cachesD[otron-1].etiqueta[bloque%8] = 'C';
                 }
                 cachesD[otron-1].libera();
             } else {
@@ -63,12 +66,14 @@ public class Bus {
         }
         else{
             System.out.println("Ocupa el bus: "+getOcupador());
-            return null;
+            int[] bOc = {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1};
+            return bOc;
         }
     };
     
     public synchronized int[] getBloqueInstr(int bloque, int nid){
-        if(getOcupador() == -1 || getOcupador() == nid){
+        int oc = getOcupador();
+        if(oc == -1 || oc == nid){
             ocupa(nid);
             int[] readblock = mem.Read(bloque, true, nid);
             if(readblock != null){
@@ -81,32 +86,35 @@ public class Bus {
         }
     };
     
-    public synchronized boolean setBloque(int bloque, int save[], int nid, boolean espere){
+    public synchronized char setBloque(int bloque, int save[], int nid, boolean espere){
         //TODO: modificar.
-        if(getOcupador() == -1 || getOcupador() == nid){
+        int oc = getOcupador();
+        if(oc == -1 || oc == nid){
             ocupa(nid);
             boolean res = mem.Write(bloque, save, espere, nid);
             if(res){
                 libera();
-                return true;
+                return 'C';
             } else {
                 //TODO: verificar deadlock
                 //System.out.println("esperando latencia memoria para set");
                 //libera();
-                return false;
+                return 'E';
             }
             
         } else {
             System.out.println("Ocupa el bus: "+getOcupador());
-            return false;
+            return 'O';
         }
     };
     
     public synchronized boolean invalidar(int block, int nid) {
-        if(getOcupador() == -1 || getOcupador() == nid){
+        int oc = getOcupador();
+        int otron = (nid==1)?2:1;
+        if(oc == -1 || oc == nid){
             ocupa(nid);
-            boolean res = cachesD[nid-1].invalidar(block, nid);
-            libera();
+            boolean res = cachesD[nid-1].invalidar(block, otron);
+            //libera();
             return res;
         } else {
             return false;
@@ -117,20 +125,21 @@ public class Bus {
     /**
      * @return the ocupador
      */
-    public synchronized int getOcupador() {
+    public int getOcupador() {
         return ocupador.get();
     };
 
     /**
      * @param ocupador the ocupador to set
+     * @return 
      */
-    public synchronized void ocupa(int ocupador) {
-        this.ocupador.set(ocupador);
+    public int ocupa(int ocupador) {
+        return this.ocupador.getAndSet(ocupador);
     };
     
     /**
      */
-    public synchronized void libera() {
+    public void libera() {
         this.ocupador.set(-1);
     };
 }

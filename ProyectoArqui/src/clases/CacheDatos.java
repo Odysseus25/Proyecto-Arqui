@@ -12,6 +12,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author dave
  */
 public class CacheDatos {
+    int bInv;
+    private Nucleo core;
     Bus bus; 
     int cache[][] = new int[(4*4)][8];
     int etiqueta[] = new int[8];
@@ -20,23 +22,30 @@ public class CacheDatos {
     
     public CacheDatos(Bus b){
         bus = b;
-        for(int i=0; i<cache.length; i++) {
-            for(int j=0; j<cache[i].length; j++) {
-                cache[i][j]=1;
+        for (int[] cache1 : cache) {
+            for (int j = 0; j < cache1.length; j++) {
+                cache1[j] = 1;
             }
         }
         //'I'=invalido, 'C'=compartido, 'M'=modificado, 'R'=modificado, pero no es el necesitado
         for(int j=0; j<etiqueta.length; j++) {
             validez[j]='I';
         }
+        bInv=-1;
     };
     
     //TODO: Liberar recursos si devuelve null;
-    public synchronized int[] getWord(int address, int nid){
-        
+    /**
+     *
+     * @param address
+     * @param nid
+     * @return
+     */
+     public int[] getWord(int address, int nid){
         int nword = (address/4)%4;
         int block = address/16;
-        if(getOcupador()==-1 || getOcupador()==nid) {
+        int oc = getOcupador();
+        if(oc==-1 || oc==nid) {
             ocupa(nid);
             switch (verificarBloque(block)) {
                 case 'C': //Bloque compartido
@@ -46,13 +55,15 @@ public class CacheDatos {
                     libera();
                     return findWord(block, nword);
                 case 'I': //Bloque inválido
-                    traeBloque(block, nid);
-                    if(validez[block%8]=='C') {
+                    char trae = traeBloque(block, nid);
+                    if(trae=='C') {
                         libera();
                         return findWord(block, nword);
-                    } else {
+                    } else if(trae=='O') {
                         //TODO: verificar deadlock
                         libera();
+                        return null;
+                    } else if (trae=='E') {
                         return null;
                     }
                 case 'R': //Bloque modificado, pero no es el que necesito
@@ -61,17 +72,27 @@ public class CacheDatos {
                         guardar[i] = cache[i][block%8];
                     }
                     System.out.println("N:"+nid+" (R)le caigo encima (get), guardo: "+etiqueta[block%8]);
-                    boolean resSave = bus.setBloque(etiqueta[block%8], guardar, nid, false);
-                    traeBloque(block, nid);
-                    if((validez[block%8]=='C') && resSave) {
+                    char resSave = bus.setBloque(etiqueta[block%8], guardar, nid, false);
+                    if(resSave=='C'){
+                        trae = traeBloque(block, nid);
+                        if(trae=='C') {
+                            libera();
+                            return findWord(block, nword);
+                        } else if(trae=='O') {
+                            //TODO: verificar deadlock
+                            libera();
+                            return null;
+                        } else if (trae=='E') {
+                            return null;
+                        }
+                    } else if(resSave == 'E') {
+                        return null;
+                    } else if(resSave== 'O') {
                         libera();
-                        return findWord(block, nword);
-                    } else {
-                        libera();
-                        System.out.println("no guardo bloque (bus busy) o espera latencia (R) "+resSave);
                         return null;
                     }
                 default:
+                    libera();
                     return null;
             }
         } else {
@@ -80,11 +101,12 @@ public class CacheDatos {
         }
     };
     
-    public synchronized boolean setWord(int address, int[] word, int nid){
+    public boolean setWord(int address, int[] word, int nid){
         int nword = ((int)(address/4))%4;
         int block = address/16;
         System.out.println("direccion: "+address+", palabra: "+nword+", bloque: "+block);
-        if(getOcupador()==-1 || getOcupador()==nid) {
+        int oc = getOcupador();
+        if(oc==-1 || oc==nid) {
             ocupa(nid);
             int otron = (nid==1)?2:1;
             char verBlock = verificarBloque(block);
@@ -93,8 +115,8 @@ public class CacheDatos {
                 case 'C': //Bloque compartido
                     boolean resInv = bus.invalidar(block, otron);
                     if(resInv) {
-                        libera();
                         findNSetWord(block, nword, word);
+                        libera();
                     } else {
                         //TODO: verificar deadlock
                         libera();
@@ -106,14 +128,16 @@ public class CacheDatos {
                     libera();
                     return true;
                 case 'I': //Bloque inválido
-                    traeBloque(block, nid);
-                    if(validez[block%8]=='C') {
+                    char trae = traeBloque(block, nid);
+                    if(trae=='C') {
                         findNSetWord(block, nword, word);
                         libera();
                         return true;
-                    } else {
+                    } else if(trae=='O') {
                         //TODO: verificar deadlock
                         libera();
+                        return false;
+                    } else if (trae=='E') {
                         return false;
                     }
                 case 'R': //Bloque modificado, pero no es el que necesito
@@ -121,26 +145,36 @@ public class CacheDatos {
                     for(int i = 0; i<4*4; i++) {
                         guardar[i] = cache[i][block%8];
                     }
-                    boolean resSave = bus.setBloque(etiqueta[block%8], guardar, nid, false);
-                    traeBloque(block, nid);
-                    System.out.println("N:"+nid+" (R)le caigo encima, guardo: "+etiqueta[block%8]+", valido? "+validez[block%8]);
-                    if((validez[block%8]=='C') && resSave) {
-                        resInv = bus.invalidar(block, otron);
-                        if(resInv) {
-                            findNSetWord(block, nword, word);
+                    char resSave = bus.setBloque(etiqueta[block%8], guardar, nid, false);
+                    if(resSave=='C'){
+                        trae = traeBloque(block, nid);
+                        System.out.println("N:"+nid+" (R)le caigo encima, guardo: "+etiqueta[block%8]+", valido? "+validez[block%8]);
+                        if(trae=='C') {
+                            resInv = bus.invalidar(block, otron);
+                            if(resInv) {
+                                findNSetWord(block, nword, word);
+                                libera();
+                                return true;
+                            } else {
+                                //TODO: verificar deadlock
+                                libera();
+                                return false;
+                            }
+                        } else if (trae=='O')  {
                             libera();
-                            return true;
+                            //System.out.println("no guardo bloque (bus busy) o espera latencia (R) "+resSave);
+                            return false;
                         } else {
-                            //TODO: verificar deadlock
-                            libera();
                             return false;
                         }
-                    } else {
+                    } else if(resSave == 'E'){
+                        return false;
+                    } else if(resSave == 'O') {
                         libera();
-                        System.out.println("no guardo bloque (bus busy) o espera latencia (R) "+resSave);
                         return false;
                     }
                 default:
+                    libera();
                     return false;
             } 
         } else {
@@ -177,27 +211,37 @@ public class CacheDatos {
     };
     
     public void findNSetWord(int block, int nword, int[] word) {
+        if(bInv==block) {
+            bInv=-1;
+            System.out.println("OK");
+        }
         for(int i=0; i<word.length; i++) {
             cache[(nword*4)+i][block%8] = word[i];
         }
         etiqueta[block%8] = block;
         validez[block%8] = 'M';
+        System.out.println(this);
     }
     
-    public  void traeBloque(int block, int nid){
+    public char traeBloque(int block, int nid){
         //System.out.println("traje bloque");
         int[] bloque;
         bloque = bus.getBloqueDatos(block, nid, true);
-        if(bloque == null){
-            //validez[block%8] = 'I';
-        } else {
-            System.out.println("trayendo bloque: "+block+", data0: "+bloque[0]+", data3: "+bloque[3]);
-            for(int i=0; i<bloque.length; i++) {
-                cache[i][block%8] = bloque[i];
+        if(bloque != null){
+            if(bloque[0]!=-1) {
+                System.out.println("traje bloque: "+block+", data0: "+bloque[0]+", data3: "+bloque[3]);
+                for(int i=0; i<bloque.length; i++) {
+                    cache[i][block%8] = bloque[i];
+                }
+                validez[block%8] = 'C';
+                etiqueta[block%8] = block;
+                return 'C';
+            } else {
+                return 'O';
             }
-            validez[block%8] = 'C';
-            etiqueta[block%8] = block;
-        }
+        } else {
+            return 'E';
+        } 
     };
 
     /**
@@ -217,20 +261,20 @@ public class CacheDatos {
         this.ocupador.set(nid);
     }
     
-    public boolean invalidar(int block, int nid) {
-        if(getOcupador()==-1 || getOcupador()==nid) {
-            
-            ocupa(nid);
-            System.out.println("Invalida: "+getOcupador());
+    public synchronized boolean invalidar(int block, int nid) {
+        bInv=block;
+        return true;
+    }
+    
+    public void invalida() {
+        if(bInv!=-1) {
             for(int i = 0; i<this.validez.length; i++) {
-                if(this.etiqueta[i]==block) {
+                if(this.etiqueta[i]==bInv) {
                     this.validez[i] = 'I';
                 }
             }
-            libera();
-            return true;
-        } else {
-            return false;
+            bInv=-1;
+            bus.libera();
         }
     }
     
@@ -261,6 +305,20 @@ public class CacheDatos {
         }
         
         return res;
+    }
+
+    /**
+     * @return the core
+     */
+    public Nucleo getCore() {
+        return core;
+    }
+
+    /**
+     * @param core the core to set
+     */
+    public void setCore(Nucleo core) {
+        this.core = core;
     }
     
 }
