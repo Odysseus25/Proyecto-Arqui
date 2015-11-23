@@ -37,7 +37,7 @@ public class Bus {
                 cachesD[otron-1].ocupa(nid);
                 char bloqueOtroN = cachesD[otron-1].verificarBloque(bloque);
                 if(bloqueOtroN=='M') {
-                    System.out.println("guardo de la otra cache");
+                    //System.out.println("guardo de la otra cache");
                     int[] guardar =  new int[16];
                     for(int i = 0; i<guardar.length; i++) {
                         guardar[i] = cachesD[otron-1].cache[i][bloque%8];
@@ -51,7 +51,7 @@ public class Bus {
                 //TODO: verificar deadlock
                 cachesD[otron-1].libera();
                 libera();
-                System.out.println("Ocupa cache dentro de bus: "+cachesD[otron-1].getOcupador());
+                //System.out.println("Ocupa cache dentro de bus: "+cachesD[otron-1].getOcupador());
                 return null;
             }
             if(save!=null){
@@ -65,7 +65,7 @@ public class Bus {
             return readblock;
         }
         else{
-            System.out.println("Ocupa el bus: "+getOcupador());
+            //System.out.println("Ocupa el bus: "+getOcupador());
             int[] bOc = {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1};
             return bOc;
         }
@@ -81,7 +81,7 @@ public class Bus {
             }
             return readblock;
         } else {
-            System.out.println("ocupa para inst: "+getOcupador());
+            //System.out.println("ocupa para inst: "+getOcupador());
             return null;
         }
     };
@@ -103,7 +103,7 @@ public class Bus {
             }
             
         } else {
-            System.out.println("Ocupa el bus: "+getOcupador());
+            //System.out.println("Ocupa el bus: "+getOcupador());
             return 'O';
         }
     };

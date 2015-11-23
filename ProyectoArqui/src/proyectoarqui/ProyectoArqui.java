@@ -221,18 +221,18 @@ public class ProyectoArqui {
             
         }
         System.out.println(div);
-        System.out.println("Cache N1: \n"+n1.getCD());
-        System.out.println("Cache N2: \n"+n2.getCD());
         System.out.println(div);
-        System.out.println(div);
-        System.out.println("RESULTADOS:");
+        System.out.println("RESULTADOS:\n");
         for(int i=0; i<finHilos.length; i++) {
             System.out.println("---->Hilo #"+i+":");
             System.out.println("-->Ciclos de reloj ocupados: "+ciclosPorHilo[i]);
             System.out.println("-->Registros Finales: "+finHilos[i]);
         }
         System.out.println(div);
-        System.out.println("-->Memoria Final: "+mem);
+        System.out.println("ESTADOS FINALES:\n");
+        System.out.println("---->Cache N1: \n"+n1.getCD()+"\n");
+        System.out.println("---->Cache N2: \n"+n2.getCD()+"\n");
+        System.out.println("---->Memoria Final: \n"+mem);
         
     }
     

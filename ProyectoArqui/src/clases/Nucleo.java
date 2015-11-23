@@ -208,7 +208,7 @@ public class Nucleo {
             }
             
 
-            System.out.println(""+op+" "+r1+" "+r2+" "+r3);
+            //System.out.println(""+op+" "+r1+" "+r2+" "+r3);
             switch (op) {
                 case 8:     //DADDI, SUMA CON LITERAL
                     //System.out.println("N"+nid+": DADDI r"+r1+" #"+r3+" ->r"+r2);
@@ -264,7 +264,7 @@ public class Nucleo {
                         r[r2] = word[0];
                     } else {
                         setEsperando(true);
-                        System.out.println("N" + nid + ": Esperando latencia, LW");
+                        //System.out.println("N" + nid + ": Esperando latencia, LW");
                     }
                     setFin(false);
                     guardaHilo();
@@ -275,20 +275,20 @@ public class Nucleo {
                     save[0] = r[r2];
                     boolean res = cd.setWord(r[r1]+r3, save, nid);
                     if(res) {
-                        System.out.println("sw: guardo: "+save[0]+" en: "+(r[r1]+r3));
+                        //System.out.println("sw: guardo: "+save[0]+" en: "+(r[r1]+r3));
                         pc += 4;
                         setEsperando(false);
-                        System.out.println("N" + nid + " STORED BITCH");
+                        //System.out.println("N" + nid + " STORED BITCH");
                     } else {
                         setEsperando(true);
-                        System.out.println("N" + nid + ": Esperando latencia, SW");
+                        //System.out.println("N" + nid + ": Esperando latencia, SW");
                     }
                     setFin(false);
                     guardaHilo();
                     //System.out.println("Memoria: "+cd.bus.mem);
                     break;
                 case 4:     //BEQZ, SALTO CONDICIONAL IGUAL A CERO
-                    System.out.println("N"+nid+": BEQZ r"+r1+"="+r[r1]+" ->r"+r3);
+                    //System.out.println("N"+nid+": BEQZ r"+r1+"="+r[r1]+" ->r"+r3);
                     pc += 4;
                     if(r[r1]==0) {
                         pc += (r3*4);
@@ -299,7 +299,7 @@ public class Nucleo {
                     setEsperando(false);
                     break;
                 case 5:     //BNEZ, SALTO CONDICIONAL NO IGUAL
-                    System.out.println("N"+nid+": BNEZ r"+r1+"="+r[r1]+" ->r"+r3);
+                    //System.out.println("N"+nid+": BNEZ r"+r1+"="+r[r1]+" ->r"+r3);
                     pc += 4;
                     if(r[r1]!=0) {
                         pc += (r3*4);
@@ -336,11 +336,11 @@ public class Nucleo {
                         llact = true;
                         bloquell = (rl/16);
                         r[r2] = word1[0];
-                        System.out.println("N" + nid + " LOAD LINKED BITCH: "+rl+". R"+r2+": "+r[r2]);
+                        //System.out.println("N" + nid + " LOAD LINKED BITCH: "+rl+". R"+r2+": "+r[r2]);
                     } else {
                         rl=-1;
                         setEsperando(true);
-                        System.out.println("N" + nid + ": Esperando latencia, LL");
+                        //System.out.println("N" + nid + ": Esperando latencia, LL");
                     }
                     setFin(false);
                     guardaHilo();
@@ -353,22 +353,22 @@ public class Nucleo {
                         
                         boolean res1 = cd.setWord(r[r1]+r3, save1, nid);
                         if(res1) {
-                            System.out.println("sc: guardo: "+save1[0]+" en: "+(r[r1]+r3));
+                            //System.out.println("sc: guardo: "+save1[0]+" en: "+(r[r1]+r3));
                             llact=false;
                             bloquell=-1;
                             pc += 4;
                             setEsperando(false);
-                            System.out.println("N" + nid + " STORED CONDITIONAL BITCH: "+rl+". R"+r2+": "+r[r2]);
+                            //System.out.println("N" + nid + " STORED CONDITIONAL BITCH: "+rl+". R"+r2+": "+r[r2]);
                             rl=-1;
                         } else {
                             setEsperando(true);
-                            System.out.println("N" + nid + ": Esperando latencia, SC");
+                            //System.out.println("N" + nid + ": Esperando latencia, SC");
                         }
                     } else {
                         rl=-1;
                         llact=false;
                         bloquell=-1;
-                        System.out.println("N" + nid + " NO STORED CONDITONAL BITCH");
+                        //System.out.println("N" + nid + " NO STORED CONDITONAL BITCH");
                         r[r2]=0;
                         pc += 4;
                         setEsperando(false);
@@ -384,12 +384,12 @@ public class Nucleo {
                     setEsperando(false);
                     break;
                 case -1:
-                   System.out.println("N" + nid + ": Esperando latencia, INST");
+                    //System.out.println("N" + nid + ": Esperando latencia, INST");
                     setFin(false);
                     setEsperando(true);
                     break;
                 default:
-                  //  System.err.println("N"+nid+": INSTRUCCION INVALIDA");
+                    //System.err.println("N"+nid+": INSTRUCCION INVALIDA");
                     setFin(true);
                     guardaHilo();
                     setEsperando(false);
@@ -459,7 +459,7 @@ public class Nucleo {
     public void invalidar() {
         if(llact) {
             if(bloquell==cd.bInv) {
-                System.err.println("bll="+bloquell+", bInv="+cd.bInv);
+                //System.err.println("bll="+bloquell+", bInv="+cd.bInv);
                 rl = -1;
                 llact=false;
                 bloquell=-1;

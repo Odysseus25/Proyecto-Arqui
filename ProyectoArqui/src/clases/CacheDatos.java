@@ -71,7 +71,7 @@ public class CacheDatos {
                     for(int i = 0; i<16; i++) {
                         guardar[i] = cache[i][block%8];
                     }
-                    System.out.println("N:"+nid+" (R)le caigo encima (get), guardo: "+etiqueta[block%8]);
+                    //System.out.println("N:"+nid+" (R)le caigo encima (get), guardo: "+etiqueta[block%8]);
                     char resSave = bus.setBloque(etiqueta[block%8], guardar, nid, false);
                     if(resSave=='C'){
                         trae = traeBloque(block, nid);
@@ -96,7 +96,7 @@ public class CacheDatos {
                     return null;
             }
         } else {
-            System.out.println("ocupa el bus(get): "+getOcupador());
+            //System.out.println("ocupa el bus(get): "+getOcupador());
             return null;
         }
     };
@@ -104,13 +104,13 @@ public class CacheDatos {
     public boolean setWord(int address, int[] word, int nid){
         int nword = ((int)(address/4))%4;
         int block = address/16;
-        System.out.println("direccion: "+address+", palabra: "+nword+", bloque: "+block);
+        //System.out.println("direccion: "+address+", palabra: "+nword+", bloque: "+block);
         int oc = getOcupador();
         if(oc==-1 || oc==nid) {
             ocupa(nid);
             int otron = (nid==1)?2:1;
             char verBlock = verificarBloque(block);
-            System.out.println("verblock: "+verBlock);
+            //System.out.println("verblock: "+verBlock);
             switch (verBlock) {
                 case 'C': //Bloque compartido
                     boolean resInv = bus.invalidar(block, otron);
@@ -148,7 +148,7 @@ public class CacheDatos {
                     char resSave = bus.setBloque(etiqueta[block%8], guardar, nid, false);
                     if(resSave=='C'){
                         trae = traeBloque(block, nid);
-                        System.out.println("N:"+nid+" (R)le caigo encima, guardo: "+etiqueta[block%8]+", valido? "+validez[block%8]);
+                        //System.out.println("N:"+nid+" (R)le caigo encima, guardo: "+etiqueta[block%8]+", valido? "+validez[block%8]);
                         if(trae=='C') {
                             resInv = bus.invalidar(block, otron);
                             if(resInv) {
@@ -178,7 +178,7 @@ public class CacheDatos {
                     return false;
             } 
         } else {
-            System.out.println("Ocupado por(set): "+getOcupador());
+            //System.out.println("Ocupado por(set): "+getOcupador());
             return false;
         }
     };
@@ -213,14 +213,14 @@ public class CacheDatos {
     public void findNSetWord(int block, int nword, int[] word) {
         if(bInv==block) {
             bInv=-1;
-            System.out.println("OK");
+            //System.out.println("OK");
         }
         for(int i=0; i<word.length; i++) {
             cache[(nword*4)+i][block%8] = word[i];
         }
         etiqueta[block%8] = block;
         validez[block%8] = 'M';
-        System.out.println(this);
+        //System.out.println(this);
     }
     
     public char traeBloque(int block, int nid){
@@ -229,7 +229,7 @@ public class CacheDatos {
         bloque = bus.getBloqueDatos(block, nid, true);
         if(bloque != null){
             if(bloque[0]!=-1) {
-                System.out.println("traje bloque: "+block+", data0: "+bloque[0]+", data3: "+bloque[3]);
+                //System.out.println("traje bloque: "+block+", data0: "+bloque[0]+", data3: "+bloque[3]);
                 for(int i=0; i<bloque.length; i++) {
                     cache[i][block%8] = bloque[i];
                 }
@@ -287,20 +287,38 @@ public class CacheDatos {
     @Override
     public String toString() {
         String res = "";
-        for(int i=0; i<cache.length; i++) {
-            if(i%4 == 0) {
+        for(int i=0; i<cache.length; i+=4) {
                 for(int j=0; j<cache[i].length; j++) {
-                    res += cache[i][j]+",";
+                    int val = cache[i][j];
+                    if(val<0) {
+                        res += "-";
+                        val *= -1;
+                    } else {
+                        res += " ";
+                    }
+                    if(val<10) {
+                        res+="  ";
+                    } else if(val<100) {
+                        res+=" ";
+                    }
+                    res += val+",";
                 }
                 res+="\n";
-            }
         }
-        res+="\n";
+        res+="Etiquetas:\n";
         for(int i=0; i<etiqueta.length; i++) {
+            if(etiqueta[i]<10) {
+                res+="   ";
+            } else if(etiqueta[i]<100) {
+                res+="  ";
+            } else if(etiqueta[i]<1000) {
+                res+=" ";
+            }
             res+=etiqueta[i]+",";
         }
         res+="\n";
         for(int i=0; i<etiqueta.length; i++) {
+            res+="   ";
             res+=validez[i]+",";
         }
         
